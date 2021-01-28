@@ -1,27 +1,208 @@
 package core;
 
-public class Chame {
+import javax.swing.border.*;
+import java.awt.image.*;
+import java.io.IOException;
+import java.util.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Chame extends JPanel implements ActionListener {
+
+	final int BOARD_SIZE = 8;
+	private JFrame frame;
+	private JPanel ui;
+	private JPanel board;
+	private static JButton[][] gridSquares;
+	private HashMap<String, Image> iconmap;
+	
+	private static final long serialVersionUID = 1L;
+	
 	
 	private GameLogic logic;
 	
-	public Chame() {
-		logic = new GameLogic();
-		logic.setupBoard();
-		runGame();
+	public Chame(int p1, int p2) {
+
+		frame = new JFrame("ChameOfGuess");
+		gridSquares = new JButton[BOARD_SIZE][BOARD_SIZE];
+		iconmap = new HashMap<>();
+		loadGUI();
+		loadIconMap();
+		Thread thread = new Thread() {
+            public void run() {
+                runGame();
+            }
+        };
+        thread.start();
 	}
 	
+	private void loadGUI() {
+        loadBoardGUI();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(ui);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+	}
+	
+	private void loadIconMap() {
+		try {
+			Image img;
+			img = ImageIO.read(getClass().getResource("icons/bk.png"));
+			iconmap.put("BK", img);
+			img = ImageIO.read(getClass().getResource("icons/wk.png"));
+			iconmap.put("WK", img);
+			img = ImageIO.read(getClass().getResource("icons/bq.png"));
+			iconmap.put("BQ", img);
+			img = ImageIO.read(getClass().getResource("icons/wq.png"));
+			iconmap.put("WQ", img);
+			img = ImageIO.read(getClass().getResource("icons/br.png"));
+			iconmap.put("BR", img);
+			img = ImageIO.read(getClass().getResource("icons/wr.png"));
+			iconmap.put("WR", img);
+			img = ImageIO.read(getClass().getResource("icons/bb.png"));
+			iconmap.put("BB", img);
+			img = ImageIO.read(getClass().getResource("icons/wb.png"));
+			iconmap.put("WB", img);
+			img = ImageIO.read(getClass().getResource("icons/bp.png"));
+			iconmap.put("BP", img);
+			img = ImageIO.read(getClass().getResource("icons/wp.png"));
+			iconmap.put("WP", img);
+			img = ImageIO.read(getClass().getResource("icons/bh.png"));
+			iconmap.put("BH", img);
+			img = ImageIO.read(getClass().getResource("icons/wh.png"));
+			iconmap.put("WH", img);
+		} catch (IOException e) {
+			System.out.println("IOException caught! " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 *  This function is mostly taken from this stackoverflow post:
+	 *  https://stackoverflow.com/questions/21142686/making-a-robust-resizable-swing-chess-gui
+	 */
+	private void loadBoardGUI() {
+		board = new JPanel(new GridLayout(0, 8)) {
+
+			private static final long serialVersionUID = 1L;
+
+			/**
+             * Override the preferred size to return the largest it can, in
+             * a square shape.  Must (must, must) be added to a GridBagLayout
+             * as the only component (it uses the parent as a guide to size)
+             * with no GridBagConstaint (so it is centered).
+             */
+            @Override
+            public final Dimension getPreferredSize() {
+                Dimension d = super.getPreferredSize();
+                Dimension prefSize = null;
+                Component c = getParent();
+                if (c == null) {
+                    prefSize = new Dimension(
+                            (int)d.getWidth(),(int)d.getHeight());
+                } else if (c!=null &&
+                        c.getWidth()>d.getWidth() &&
+                        c.getHeight()>d.getHeight()) {
+                    prefSize = c.getSize();
+                } else {
+                    prefSize = d;
+                }
+                int w = (int) prefSize.getWidth();
+                int h = (int) prefSize.getHeight();
+                // the smaller of the two sizes
+                int s = (w>h ? h : w);
+                return new Dimension(s,s);
+            }
+        };
+        board.setBorder(new CompoundBorder(new EmptyBorder(8,8,8,8), new LineBorder(Color.BLACK)));
+        
+        Insets buttonMargin = new Insets(0, 0, 0, 0);
+        for (int i = 0; i < gridSquares.length; i++) {
+            for (int j = 0; j < gridSquares[0].length; j++) {
+                JButton b = new JButton();
+                b.setMargin(buttonMargin);
+                ImageIcon icon = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
+                b.setIcon(icon);
+                if ((i + j) % 2 == 0) {
+                	b.setBackground(Color.WHITE);
+                } else {
+                	b.setBackground(Color.GRAY);
+                }
+                gridSquares[j][i] = b;
+            }
+        }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                board.add(gridSquares[i][j]);
+            }
+        }
+        ui = new JPanel();
+        ui.add(board);
+        
+	}
+	
+	public void updateGraphics() {
+        Piece[][] brd = logic.getBoard();
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (brd[i][j] != null) {
+                	String key = "";
+                	if (brd[i][j].getColor()) {
+                		key += "W";
+                	} else {
+                		key += "B";
+                	}
+                	key += brd[i][j].getSymbol();
+                	Image temp = iconmap.get(key);
+                	if (temp != null) {
+                		Image img = temp.getScaledInstance( 64, 64,  java.awt.Image.SCALE_SMOOTH ) ;
+                    	gridSquares[i][j].setIcon(new ImageIcon(img));
+                	} else {
+                		System.out.println("key '" + key + "' not in hashmap");
+                	}
+                } else {
+                	ImageIcon icon = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
+                	gridSquares[i][j].setIcon(icon);
+                }
+            }
+        }
+    }
+	
 	private void runGame() {
+		logic = new GameLogic();
+		logic.setupBoard();
 		
 //		while (!logic.isGameOver()) {
 			logic.gameLoop();
+			updateGraphics();
 //		}
 		
 		
 	}
 
 	public static void main(String[] args) {
-		new Chame();
+		if (args.length == 2) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new Chame(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+                }
+            });
+        } else {
+            System.out.println("Usage: Chame <> <>");
+        }
 
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

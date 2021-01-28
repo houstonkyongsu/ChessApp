@@ -17,9 +17,9 @@ public class Pawn extends Piece {
 
 	public boolean canMovePiece(Piece[][] board, int x, int y) {
 		Pair p = new Pair(x, y);
-		ArrayList<Pair> list = getMoveList(board);
-		for (Pair pair : list) {
-			if (pair.comparePair(p)) {
+		ArrayList<Move> list = getMoveList(board);
+		for (Move move : list) {
+			if (move.getEnd().comparePair(p)) {
 				return true;
 			}
 		}

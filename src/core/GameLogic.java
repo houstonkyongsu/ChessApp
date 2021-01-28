@@ -16,6 +16,10 @@ public class GameLogic {
 		gameOver = false;
 	}
 	
+	public Piece[][] getBoard() {
+		return board;
+	}
+	
 	public boolean isGameOver() {
 		return gameOver;
 	}
