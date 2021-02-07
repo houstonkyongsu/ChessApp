@@ -53,6 +53,7 @@ public class GameLogic {
 	
 	public void gameLoop() {
 		printBoard();
+		
 	}
 	
 	public void printBoard() {

@@ -114,7 +114,6 @@ public class Chame extends JPanel implements ActionListener {
                 }
                 int w = (int) prefSize.getWidth();
                 int h = (int) prefSize.getHeight();
-                // the smaller of the two sizes
                 int s = (w>h ? h : w);
                 return new Dimension(s,s);
             }
@@ -128,6 +127,9 @@ public class Chame extends JPanel implements ActionListener {
                 b.setMargin(buttonMargin);
                 ImageIcon icon = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
                 b.setIcon(icon);
+                b.putClientProperty("row", i);
+                b.putClientProperty("col", j);
+                b.addActionListener(this);
                 if ((i + j) % 2 == 0) {
                 	b.setBackground(Color.WHITE);
                 } else {
@@ -201,8 +203,10 @@ public class Chame extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		JButton b = (JButton) e.getSource();
+		int i = (int) b.getClientProperty("row");
+		int j = (int) b.getClientProperty("col");
+		System.out.println("row: " + j + " , col: " + i);
 	}
 
 }
