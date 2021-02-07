@@ -17,4 +17,11 @@ public class Move {
 	public Pair getEnd() {
 		return end;
 	}
+	
+	public boolean compareMove(Move m) {
+		if (m.getStart().comparePair(start) && m.getEnd().comparePair(end)) {
+			return true;
+		}
+		return false;
+	}
 }

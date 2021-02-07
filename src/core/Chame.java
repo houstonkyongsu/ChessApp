@@ -18,6 +18,7 @@ public class Chame extends JPanel implements ActionListener {
 	private JPanel board;
 	private static JButton[][] gridSquares;
 	private HashMap<String, Image> iconmap;
+	private boolean playerTurn;
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -25,7 +26,7 @@ public class Chame extends JPanel implements ActionListener {
 	private GameLogic logic;
 	
 	public Chame(int p1, int p2) {
-
+		playerTurn = true;
 		frame = new JFrame("ChameOfGuess");
 		gridSquares = new JButton[BOARD_SIZE][BOARD_SIZE];
 		iconmap = new HashMap<>();
@@ -180,7 +181,8 @@ public class Chame extends JPanel implements ActionListener {
 		logic.setupBoard();
 		
 //		while (!logic.isGameOver()) {
-			logic.gameLoop();
+//			logic.gameLoop();
+			
 			updateGraphics();
 //		}
 		
@@ -204,9 +206,11 @@ public class Chame extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton b = (JButton) e.getSource();
-		int i = (int) b.getClientProperty("row");
-		int j = (int) b.getClientProperty("col");
-		System.out.println("row: " + j + " , col: " + i);
+		if (b != null && playerTurn) {
+			int i = (int) b.getClientProperty("row");
+			int j = (int) b.getClientProperty("col");
+			System.out.println("row: " + j + " , col: " + i);
+		}
 	}
 
 }

@@ -6,13 +6,15 @@ public class GameLogic {
 	
 	final int BOARD_SIZE = 8;
 	private Piece[][] board;
-	private RuleSet rules;
+//	private RuleSet rules;
 	private int numMoves = 0;
 	private boolean gameOver;
+	private King bK;
+	private King wK;
 	
 	public GameLogic() {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
-		rules = new RuleSet();
+//		rules = new RuleSet();
 		gameOver = false;
 	}
 	
@@ -26,6 +28,10 @@ public class GameLogic {
 	
 	public int getNumMoves() {
 		return numMoves;
+	}
+	
+	private boolean currentColour() {
+		return numMoves % 2 == 0;
 	}
 	
 	public void setupBoard() {
@@ -49,12 +55,46 @@ public class GameLogic {
 		board[7][3] = new Queen(7, 3, true);
 		board[0][4] = new King(0, 4, false);
 		board[7][4] = new King(7, 4, true);
+		wK = (King) board[7][4];
+		bK = (King) board[0][4];
 	}
 	
-	public void gameLoop() {
-		printBoard();
-		
+	public void updatePieceMoves() {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] != null && board[i][j].getColor() == currentColour()) {
+					board[i][j].updateMoveList();
+				}
+			}
+		}
 	}
+	
+//	public void gameLoop() {
+//		printBoard();
+//		
+//		
+//	}
+	
+	public boolean tryMove(int x1, int y1, int x2, int y2) {
+		Piece p1 = board[x1][y1];
+		Piece p2 = board[x2][y2];
+		if (p1 != null && (p2 == null || p2.getColor() != p1.getColor())) {
+			if (moveInMoveList(p1, new Move(new Pair(x1, y1),new Pair(x2, y2)))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean moveInMoveList(Piece p, Move m) {
+		for (Move m : p.getMoveList()) {
+			if (m.compareMove(m)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	public void printBoard() {
 		for (int i = 0; i < BOARD_SIZE; i++) {

@@ -1,7 +1,5 @@
 package core;
 
-import java.util.ArrayList;
-
 public class King extends Piece {
 
 	public King(int x, int y, boolean white) {
@@ -15,18 +13,24 @@ public class King extends Piece {
 		return k;
 	}
 	
-	public ArrayList<Move> getMoveList(Piece[][] board) {
-		ArrayList<Move> list = new ArrayList<>();
-		checkSafeMove(board, 0, 1, list);
-		checkSafeMove(board, 1, 0, list);
-		checkSafeMove(board, 0, -1, list);
-		checkSafeMove(board, -1, 0, list);
-		checkSafeMove(board, 1, 1, list);
-		checkSafeMove(board, 1, -1, list);
-		checkSafeMove(board, -1, 1, list);
-		checkSafeMove(board, -1, -1, list);
-		return list;
+	public void updateMoveList(Piece[][] board) {
+		getMoveList().clear();
+		checkSafeMove(board, 0, 1);
+		checkSafeMove(board, 1, 0);
+		checkSafeMove(board, 0, -1);
+		checkSafeMove(board, -1, 0);
+		checkSafeMove(board, 1, 1);
+		checkSafeMove(board, 1, -1);
+		checkSafeMove(board, -1, 1);
+		checkSafeMove(board, -1, -1);
 	}
+	
+//	public boolean isCheckMated(Piece[][] board) {
+//		if (isChecked(board) && getMoveList) {
+//			
+//		}
+//		return false;
+//	}
 	
 	public boolean isChecked(Piece[][] board) {
 		if (checkPawn(board) || checkKnight(board)
@@ -43,11 +47,11 @@ public class King extends Piece {
 		return false;
 	}
 	
-	private void checkSafeMove(Piece[][] board, int x, int y, ArrayList<Move> list) {
+	private void checkSafeMove(Piece[][] board, int x, int y) {
 		int xx = getX() + x;
 		int yy = getY() + y;
 		if (withinBounds(xx, yy) && (board[xx][yy] == null || board[xx][yy].getColor() != getColor()) && !isChecked(board)) {
-			list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
+			getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
 		}
 	}
 	

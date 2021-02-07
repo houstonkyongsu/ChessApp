@@ -11,6 +11,7 @@ public class Piece {
 	private boolean pinned;
 	private char symbol = 'x';
 	private int moves;
+	private ArrayList<Move> moveList;
 	
 	public Piece(int x, int y, boolean color) {
 		this.setX(x);
@@ -18,6 +19,11 @@ public class Piece {
 		this.color = color;
 		pinned = false;
 		moves = 0;
+		moveList = new ArrayList<>();
+	}
+	
+	public ArrayList<Move> getMoveList() {
+		return moveList;
 	}
 	
 	public boolean getColor() {
@@ -93,8 +99,13 @@ public class Piece {
 		return list;
 	}
 
-	public Piece copyPiece() { // this method should be overridden in each child class
-		return new Piece(getX(), getY(), getColor());
+//	public Piece copyPiece() { // this method should be overridden in each child class
+//		return new Piece(getX(), getY(), getColor());
+//	}
+
+	public void updateMoveList() {
+		// function should be overridden in each child class
+		
 	}
 	
 
