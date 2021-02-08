@@ -87,6 +87,9 @@ public class Piece {
 		while (withinBounds(xx, yy)) {
 			xx += addx;
 			yy += addy;
+			if (!noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
+				return list;
+			}
 			if (board[xx][yy] == null) {
 				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
 			} else if (board[xx][yy].getColor() != color) {
@@ -99,13 +102,56 @@ public class Piece {
 		return list;
 	}
 
-//	public Piece copyPiece() { // this method should be overridden in each child class
-//		return new Piece(getX(), getY(), getColor());
-//	}
+	public Piece copyPiece() { // this method should be overridden in each child class
+		return new Piece(getX(), getY(), getColor());
+	}
 
 	public void updateMoveList() {
 		// function should be overridden in each child class
-		
+	}
+	
+	public boolean noRevealCheck(Piece[][] board, Move m) {
+		Piece[][] copy = deepCopyBoard(board);
+		Pair p1 = m.getStart();
+		Pair p2 = m.getEnd();
+		copy[p1.getX()][p1.getY()].placePiece(copy, p2.getX(), p2.getY());
+		copy[p1.getX()][p1.getY()] = null;
+		if (getKing(copy).isChecked(copy)) {
+			return false;
+		}
+		return true;
+	}
+	
+	public King getKing(Piece[][] board) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] != null && board[i][j].getSymbol() == 'K' && board[i][j].getColor() == getColor()) {
+					return (King) board[i][j];
+				}
+			}
+		}
+		return null; // should be unreachable
+	}
+	
+	public void reduceMoveList() {
+		for (Move m : getMoveList()) {
+			
+		}
+	}
+	
+	/*
+	 * Function to return a deep copy of the board, so original object values aren't changed when checking future possible moves.
+	 */
+	public Piece[][] deepCopyBoard(Piece[][] board) {
+		Piece[][] copy = new Piece[BOARD_SIZE][BOARD_SIZE];
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] != null) {
+					copy[i][j] = board[i][j].copyPiece();
+				}
+			}
+		}
+		return copy;
 	}
 	
 

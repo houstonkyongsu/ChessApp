@@ -29,29 +29,35 @@ public class Pawn extends Piece {
 		int xx = super.getX();
 		int yy = super.getY();
 		if (super.getColor()) {
-			if (super.withinBounds(xx-1, yy) && board[xx-1][yy] == null) {
+			if (super.withinBounds(xx-1, yy) && board[xx-1][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy)));
 			}
-			if (super.withinBounds(xx-2, yy) && super.getMoves() == 0 && board[xx-2][yy] == null) {
+			if (super.withinBounds(xx-2, yy) && super.getMoves() == 0 && board[xx-2][yy] == null 
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy)));
 			}
-			if (super.withinBounds(xx-1, yy+1) && board[xx-1][yy+1].getColor() != super.getColor()) {
+			if (super.withinBounds(xx-1, yy+1) && board[xx-1][yy+1].getColor() != super.getColor() 
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+1)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+1)));
 			}
-			if (super.withinBounds(xx-1, yy-1) && board[xx-1][yy-1].getColor() != super.getColor()) {
+			if (super.withinBounds(xx-1, yy-1) && board[xx-1][yy-1].getColor() != super.getColor()
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-1)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-1)));
 			}
 		} else {
-			if (super.withinBounds(xx+1, yy) && board[xx+1][yy] == null) {
+			if (super.withinBounds(xx+1, yy) && board[xx+1][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy)));
 			}
-			if (super.withinBounds(xx+2, yy) && super.getMoves() == 0 && board[xx+2][yy] == null) {
+			if (super.withinBounds(xx+2, yy) && super.getMoves() == 0 && board[xx+2][yy] == null
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy)));
 			}
-			if (super.withinBounds(xx+1, yy-1) && board[xx+1][yy-1].getColor() != super.getColor()) {
+			if (super.withinBounds(xx+1, yy-1) && board[xx+1][yy-1].getColor() != super.getColor()
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-1)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-1)));
 			}
-			if (super.withinBounds(xx+1, yy+1) && board[xx+1][yy+1].getColor() != super.getColor()) {
+			if (super.withinBounds(xx+1, yy+1) && board[xx+1][yy+1].getColor() != super.getColor()
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+1)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+1)));
 			}
 		}

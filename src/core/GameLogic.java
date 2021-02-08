@@ -6,16 +6,16 @@ public class GameLogic {
 	
 	final int BOARD_SIZE = 8;
 	private Piece[][] board;
-//	private RuleSet rules;
 	private int numMoves = 0;
 	private boolean gameOver;
 	private King bK;
 	private King wK;
+	private boolean inCheck;
 	
 	public GameLogic() {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
-//		rules = new RuleSet();
 		gameOver = false;
+		inCheck = false;
 	}
 	
 	public Piece[][] getBoard() {
@@ -69,11 +69,19 @@ public class GameLogic {
 		}
 	}
 	
-//	public void gameLoop() {
-//		printBoard();
-//		
-//		
-//	}
+	public void gameLoop() {
+		printBoard();
+	 	
+		
+	}
+	
+	public void checkKingNotChecked() {
+		King k = (currentColour()) ? wK : bK;
+		if (k.isChecked(board)) {
+			
+		}
+		
+	}
 	
 	public boolean tryMove(int x1, int y1, int x2, int y2) {
 		Piece p1 = board[x1][y1];
@@ -86,9 +94,14 @@ public class GameLogic {
 		return false;
 	}
 	
-	private boolean moveInMoveList(Piece p, Move m) {
+	public void makeUserMove(int x1, int y1, int x2, int y2) {
+		board[x1][y1].placePiece(board, x2, y2);
+		board[x1][y1] = null;
+	}
+	
+	private boolean moveInMoveList(Piece p, Move move) {
 		for (Move m : p.getMoveList()) {
-			if (m.compareMove(m)) {
+			if (m.compareMove(move)) {
 				return true;
 			}
 		}
