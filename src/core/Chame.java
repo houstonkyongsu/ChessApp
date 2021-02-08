@@ -19,6 +19,7 @@ public class Chame extends JPanel implements ActionListener {
 	private static JButton[][] gridSquares;
 	private HashMap<String, Image> iconmap;
 	private boolean playerTurn;
+	private Pair first;
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -30,6 +31,7 @@ public class Chame extends JPanel implements ActionListener {
 		frame = new JFrame("ChameOfGuess");
 		gridSquares = new JButton[BOARD_SIZE][BOARD_SIZE];
 		iconmap = new HashMap<>();
+		first = new Pair(-1, -1);
 		loadGUI();
 		loadIconMap();
 		Thread thread = new Thread() {
@@ -210,6 +212,16 @@ public class Chame extends JPanel implements ActionListener {
 			int i = (int) b.getClientProperty("row");
 			int j = (int) b.getClientProperty("col");
 			System.out.println("row: " + j + " , col: " + i);
+			if (first.getX() == -1) {
+				first.setX(i);
+				first.setY(j);
+			} else {
+				if (logic.tryMove(first.getX(), first.getX(), i, j)) {
+					logic.makeUserMove(first.getX(), first.getX(), i, j);
+				}
+				first.setX(-1);
+				first.setY(-1);
+			}
 		}
 	}
 

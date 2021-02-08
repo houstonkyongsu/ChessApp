@@ -87,16 +87,15 @@ public class Piece {
 		while (withinBounds(xx, yy)) {
 			xx += addx;
 			yy += addy;
-			if (!noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
-				return list;
-			}
-			if (board[xx][yy] == null) {
-				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
-			} else if (board[xx][yy].getColor() != color) {
-				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
-				break;
-			} else {
-				break;
+			if (noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
+				if (board[xx][yy] == null) {
+					list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
+				} else if (board[xx][yy].getColor() != color) {
+					list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
+					break;
+				} else {
+					break;
+				}
 			}
 		}
 		return list;

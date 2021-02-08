@@ -10,12 +10,14 @@ public class GameLogic {
 	private boolean gameOver;
 	private King bK;
 	private King wK;
+	private ArrayList<Move> moves;
 	private boolean inCheck;
 	
 	public GameLogic() {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
 		gameOver = false;
 		inCheck = false;
+		moves = new ArrayList<>();
 	}
 	
 	public Piece[][] getBoard() {
@@ -69,18 +71,34 @@ public class GameLogic {
 		}
 	}
 	
+	public int countPieceMoves() {
+		int count = 0;
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] != null && board[i][j].getColor() == currentColour()) {
+					count += board[i][j].getMoveList().size();
+				}
+			}
+		}
+		return count;
+	}
+	
 	public void gameLoop() {
 		printBoard();
 	 	
 		
 	}
 	
-	public void checkKingNotChecked() {
+	public void checkGameNotOver() {
 		King k = (currentColour()) ? wK : bK;
 		if (k.isChecked(board)) {
-			
+			inCheck = true;
+		} else {
+			inCheck = false;
 		}
-		
+		if (countPieceMoves() == 0) {
+			gameOver = true;
+		}
 	}
 	
 	public boolean tryMove(int x1, int y1, int x2, int y2) {
@@ -97,6 +115,7 @@ public class GameLogic {
 	public void makeUserMove(int x1, int y1, int x2, int y2) {
 		board[x1][y1].placePiece(board, x2, y2);
 		board[x1][y1] = null;
+		numMoves++;
 	}
 	
 	private boolean moveInMoveList(Piece p, Move move) {
@@ -120,7 +139,6 @@ public class GameLogic {
 					System.out.print("B" + board[i][j].getSymbol() + " ");
 				}
 			}
-			System.out.println(i);
 		}
 	}
 	
