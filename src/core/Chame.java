@@ -4,6 +4,8 @@ import javax.swing.border.*;
 import java.awt.image.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +20,6 @@ public class Chame extends JPanel implements ActionListener {
 	private JPanel board;
 	private static JButton[][] gridSquares;
 	private HashMap<String, Image> iconmap;
-	private boolean playerTurn;
 	private Pair first;
 	
 	private static final long serialVersionUID = 1L;
@@ -27,7 +28,6 @@ public class Chame extends JPanel implements ActionListener {
 	private GameLogic logic;
 	
 	public Chame(int p1, int p2) {
-		playerTurn = true;
 		frame = new JFrame("ChameOfGuess");
 		gridSquares = new JButton[BOARD_SIZE][BOARD_SIZE];
 		iconmap = new HashMap<>();
@@ -181,14 +181,25 @@ public class Chame extends JPanel implements ActionListener {
 	private void runGame() {
 		logic = new GameLogic();
 		logic.setupBoard();
-		
-//		while (!logic.isGameOver()) {
-//			logic.gameLoop();
-			
-			updateGraphics();
-//		}
-		
-		
+		logic.updatePieceMoves();
+		try {
+			while (!logic.isGameOver()) {
+				updateGraphics();
+				System.out.println("count: " + logic.countPieceMoves());
+				
+				while (logic.isPlayerTurn()) {
+					
+					TimeUnit.MILLISECONDS.sleep(5);
+				}
+				logic.updatePieceMoves();
+				logic.setPlayerTurn(true);
+				logic.checkGameNotOver();
+				
+			}
+			System.out.println("game over");
+		} catch (InterruptedException e) {
+			System.out.println("InterruptedException caught: " + e.getMessage());
+		}
 	}
 
 	public static void main(String[] args) {
@@ -208,16 +219,17 @@ public class Chame extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton b = (JButton) e.getSource();
-		if (b != null && playerTurn) {
+		if (b != null && logic.isPlayerTurn()) {
 			int i = (int) b.getClientProperty("row");
 			int j = (int) b.getClientProperty("col");
-			System.out.println("row: " + j + " , col: " + i);
 			if (first.getX() == -1) {
-				first.setX(i);
-				first.setY(j);
+				System.out.println("first");
+				first.setX(j);
+				first.setY(i);
 			} else {
-				if (logic.tryMove(first.getX(), first.getX(), i, j)) {
-					logic.makeUserMove(first.getX(), first.getX(), i, j);
+				System.out.println("second");
+				if (logic.tryMove(first.getX(), first.getY(), j, i)) {
+					logic.makeUserMove(first.getX(), first.getY(), j, i);
 				}
 				first.setX(-1);
 				first.setY(-1);

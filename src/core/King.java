@@ -7,9 +7,11 @@ public class King extends Piece {
 		super.setSymbol('K');
 	}
 	
+	@SuppressWarnings("unchecked")
 	public King copyPiece() {
 		King k = new King(getX(), getY(), getColor());
 		k.setMoves(getMoves());
+		k.setMoveList(getMoveList());
 		return k;
 	}
 	
@@ -58,9 +60,12 @@ public class King extends Piece {
 	private boolean checkRookBishop(Piece[][] board, int addx, int addy, char c) {
 		int xx = getX();
 		int yy = getY();
-		while (withinBounds(xx, yy)) {
+		while (true) {
 			xx += addx;
 			yy += addy;
+			if (!withinBounds(xx, yy)) {
+				break;
+			}
 			if (board[xx][yy] != null) {
 				if (board[xx][yy].getColor() != this.getColor() && (board[xx][yy].getSymbol() == c || board[xx][yy].getSymbol() == 'Q')) {
 					return true;
@@ -82,10 +87,10 @@ public class King extends Piece {
 				return true;
 			}
 		} else {
-			if (withinBounds(xx+1, yy-1) && board[xx+1][yy-1] != null && !board[xx+1][yy-1].getColor() && board[xx+1][yy-1].getSymbol() == 'P') {
+			if (withinBounds(xx+1, yy-1) && board[xx+1][yy-1] != null && board[xx+1][yy-1].getColor() && board[xx+1][yy-1].getSymbol() == 'P') {
 				return true;
 			}
-			if (withinBounds(xx+1, yy+1) && board[xx+1][yy+1] != null && !board[xx+1][yy+1].getColor() && board[xx+1][yy+1].getSymbol() == 'P') {
+			if (withinBounds(xx+1, yy+1) && board[xx+1][yy+1] != null && board[xx+1][yy+1].getColor() && board[xx+1][yy+1].getSymbol() == 'P') {
 				return true;
 			}
 		}

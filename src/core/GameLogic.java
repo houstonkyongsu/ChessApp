@@ -8,6 +8,7 @@ public class GameLogic {
 	private Piece[][] board;
 	private int numMoves = 0;
 	private boolean gameOver;
+	private boolean playerTurn;
 	private King bK;
 	private King wK;
 	private ArrayList<Move> moves;
@@ -17,9 +18,18 @@ public class GameLogic {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
 		gameOver = false;
 		inCheck = false;
+		setPlayerTurn(true);
 		moves = new ArrayList<>();
 	}
 	
+	public boolean isPlayerTurn() {
+		return playerTurn;
+	}
+
+	public void setPlayerTurn(boolean playerTurn) {
+		this.playerTurn = playerTurn;
+	}
+
 	public Piece[][] getBoard() {
 		return board;
 	}
@@ -64,8 +74,12 @@ public class GameLogic {
 	public void updatePieceMoves() {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
-				if (board[i][j] != null && board[i][j].getColor() == currentColour()) {
-					board[i][j].updateMoveList();
+				if (board[i][j] != null) {
+					if (board[i][j].getColor() == currentColour()) {
+						getChildPiece(board[i][j]).updateMoveList(board);
+					} else {
+						board[i][j].clearMoveList();
+					}
 				}
 			}
 		}
@@ -75,19 +89,15 @@ public class GameLogic {
 		int count = 0;
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
-				if (board[i][j] != null && board[i][j].getColor() == currentColour()) {
-					count += board[i][j].getMoveList().size();
+				if (board[i][j] != null && (board[i][j].getColor() == currentColour())) {
+					
+					count += getChildPiece(board[i][j]).getMoveList().size();
 				}
 			}
 		}
 		return count;
 	}
 	
-	public void gameLoop() {
-		printBoard();
-	 	
-		
-	}
 	
 	public void checkGameNotOver() {
 		King k = (currentColour()) ? wK : bK;
@@ -113,13 +123,34 @@ public class GameLogic {
 	}
 	
 	public void makeUserMove(int x1, int y1, int x2, int y2) {
-		board[x1][y1].placePiece(board, x2, y2);
+		getChildPiece(board[x1][y1]).placePiece(board, x2, y2);
 		board[x1][y1] = null;
 		numMoves++;
+		playerTurn = false;
+	}
+	
+	public Piece getChildPiece(Piece piece) {
+		switch (piece.getSymbol()) {
+			case 'P':
+				return (Pawn) piece;
+			case 'K':
+				return (King) piece;
+			case 'H':
+				return (Knight) piece;
+			case 'B':
+				return (Bishop) piece;
+			case 'R':
+				return (Rook) piece;
+			case 'Q':
+				return (Queen) piece;
+			default:
+				System.out.println("superclass piece object on board, how did this happen");
+		}
+		return null;
 	}
 	
 	private boolean moveInMoveList(Piece p, Move move) {
-		for (Move m : p.getMoveList()) {
+		for (Move m : getChildPiece(p).getMoveList()) {
 			if (m.compareMove(move)) {
 				return true;
 			}

@@ -7,20 +7,23 @@ public class Queen extends Piece {
 		super.setSymbol('Q');
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Queen copyPiece() {
-		return new Queen(getX(), getY(), getColor());
+		Queen q = new Queen(getX(), getY(), getColor());
+		q.setMoveList(getMoveList());
+		return q;
 	}
 
 	public void updateMoveList(Piece[][] board) {
-		getMoveList().clear();
-		getMoveList().addAll(super.directionalIterList(board, 1, 1));
-		getMoveList().addAll(super.directionalIterList(board, 1, -1));
-		getMoveList().addAll(super.directionalIterList(board, -1, 1));
-		getMoveList().addAll(super.directionalIterList(board, -1, -1));
-		getMoveList().addAll(super.directionalIterList(board, 0, 1));
-		getMoveList().addAll(super.directionalIterList(board, 1, 0));
-		getMoveList().addAll(super.directionalIterList(board, -1, 0));
-		getMoveList().addAll(super.directionalIterList(board, 0, -1));
+		super.getMoveList().clear();
+		super.getMoveList().addAll(super.directionalIterList(board, 1, 1));
+		super.getMoveList().addAll(super.directionalIterList(board, 1, -1));
+		super.getMoveList().addAll(super.directionalIterList(board, -1, 1));
+		super.getMoveList().addAll(super.directionalIterList(board, -1, -1));
+		super.getMoveList().addAll(super.directionalIterList(board, 0, 1));
+		super.getMoveList().addAll(super.directionalIterList(board, 1, 0));
+		super.getMoveList().addAll(super.directionalIterList(board, -1, 0));
+		super.getMoveList().addAll(super.directionalIterList(board, 0, -1));
 	}
 	
 }

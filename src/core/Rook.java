@@ -7,9 +7,11 @@ public class Rook extends Piece {
 		super.setSymbol('R');
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Rook copyPiece() {
 		Rook r = new Rook(getX(), getY(), getColor());
 		r.setMoves(getMoves());
+		r.setMoveList(getMoveList());
 		return r;
 	}
 

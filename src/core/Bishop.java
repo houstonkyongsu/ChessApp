@@ -7,8 +7,11 @@ public class Bishop extends Piece {
 		super.setSymbol('B');
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Bishop copyPiece() {
-		return new Bishop(getX(), getY(), getColor());
+		Bishop b = new Bishop(getX(), getY(), getColor());
+		b.setMoveList(getMoveList());
+		return b;
 	}
 	
 	public void updateMoveList(Piece[][] board) {
