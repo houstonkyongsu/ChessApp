@@ -101,7 +101,7 @@ public abstract class Piece {
 			}
 			if (board[xx][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
 				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
-			} else if (board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
+			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
 				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
 				break;
 			} else {

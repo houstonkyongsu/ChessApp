@@ -196,6 +196,7 @@ public class Chame extends JPanel implements ActionListener {
 				logic.checkGameNotOver();
 				
 			}
+			updateGraphics();
 			System.out.println("game over");
 		} catch (InterruptedException e) {
 			System.out.println("InterruptedException caught: " + e.getMessage());
