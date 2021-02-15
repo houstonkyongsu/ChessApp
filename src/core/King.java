@@ -25,14 +25,10 @@ public class King extends Piece {
 		checkSafeMove(board, 1, -1);
 		checkSafeMove(board, -1, 1);
 		checkSafeMove(board, -1, -1);
+		if (!isChecked(board)) {
+			checkCastling(board);
+		}
 	}
-	
-//	public boolean isCheckMated(Piece[][] board) {
-//		if (isChecked(board) && getMoveList) {
-//			
-//		}
-//		return false;
-//	}
 	
 	public boolean isChecked(Piece[][] board) {
 		if (checkPawn(board) || checkKnight(board)
@@ -47,6 +43,30 @@ public class King extends Piece {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean squareNotAttacked(Piece[][] board, Pair p1) {
+		Piece[][] copy = deepCopyBoard(board);
+		copy[getX()][getY()].placePiece(copy, p1.getX(), p1.getY());;
+		copy[getX()][getY()] = null;
+		if (getKing(copy, getColor()).isChecked(copy)) {
+			return false;
+		}
+		return true;
+	}
+	
+	private void checkCastling(Piece[][] board) {
+		if (getMoves() == 0 && board[getX()][getY()+3].getMoves() == 0 && board[getX()][getY()+1] == null && board[getX()][getY()+2] == null
+				 && board[getX()][getY()+3].getSymbol() == 'R') {
+			if (squareNotAttacked(board, new Pair(getX(), getY()+1)) && squareNotAttacked(board, new Pair(getX(), getY()+2))) {
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()+2)));
+			}
+		} else if (getMoves() == 0 && board[getX()][getY()-4].getMoves() == 0 && board[getX()][getY()-1] == null && board[getX()][getY()-2] == null
+				 && board[getX()][getY()-3] == null && board[getX()][getY()-4].getSymbol() == 'R') {
+			if (squareNotAttacked(board, new Pair(getX(), getY()-1)) && squareNotAttacked(board, new Pair(getX(), getY()-2))) {
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()-2)));
+			}
+		}
 	}
 	
 	private void checkSafeMove(Piece[][] board, int x, int y) {

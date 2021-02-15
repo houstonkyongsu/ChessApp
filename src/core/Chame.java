@@ -230,7 +230,7 @@ public class Chame extends JPanel implements ActionListener {
 			} else {
 				System.out.println("second");
 				if (logic.tryMove(first.getX(), first.getY(), j, i)) {
-					logic.makeUserMove(first.getX(), first.getY(), j, i);
+					logic.makeGameMove(first.getX(), first.getY(), j, i);
 				}
 				first.setX(-1);
 				first.setY(-1);

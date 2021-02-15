@@ -122,9 +122,18 @@ public class GameLogic {
 		return false;
 	}
 	
-	public void makeUserMove(int x1, int y1, int x2, int y2) {
+	public void makeGameMove(int x1, int y1, int x2, int y2) {
 		getChildPiece(board[x1][y1]).placePiece(board, x2, y2);
 		board[x1][y1] = null;
+		if (board[x2][y2].getSymbol() == 'K' && board[x2][y2].getMoves() == 1 && Math.abs(y1-y2) > 1) {
+			if (y2 > 4) {
+				getChildPiece(board[x2][BOARD_SIZE-1]).placePiece(board, x2, y2-1);
+				board[x2][BOARD_SIZE-1] = null;
+			} else {
+				getChildPiece(board[x2][0]).placePiece(board, x2, y2+1);
+				board[x2][0] = null;
+			}
+		}
 		numMoves++;
 		playerTurn = false;
 	}
