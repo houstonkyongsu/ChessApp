@@ -57,12 +57,12 @@ public class King extends Piece {
 	}
 	
 	private void checkCastling(Piece[][] board) {
-		if (getMoves() == 0 && board[getX()][getY()+3].getMoves() == 0 && board[getX()][getY()+1] == null && board[getX()][getY()+2] == null
+		if (getMoves() == 0 && board[getX()][getY()+3] != null && board[getX()][getY()+3].getMoves() == 0 && board[getX()][getY()+1] == null && board[getX()][getY()+2] == null
 				 && board[getX()][getY()+3].getSymbol() == 'R') {
 			if (squareNotAttacked(board, new Pair(getX(), getY()+1)) && squareNotAttacked(board, new Pair(getX(), getY()+2))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()+2)));
 			}
-		} else if (getMoves() == 0 && board[getX()][getY()-4].getMoves() == 0 && board[getX()][getY()-1] == null && board[getX()][getY()-2] == null
+		} else if (getMoves() == 0 && board[getX()][getY()-4] != null && board[getX()][getY()-4].getMoves() == 0 && board[getX()][getY()-1] == null && board[getX()][getY()-2] == null
 				 && board[getX()][getY()-3] == null && board[getX()][getY()-4].getSymbol() == 'R') {
 			if (squareNotAttacked(board, new Pair(getX(), getY()-1)) && squareNotAttacked(board, new Pair(getX(), getY()-2))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()-2)));
@@ -73,9 +73,27 @@ public class King extends Piece {
 	private void checkSafeMove(Piece[][] board, int x, int y) {
 		int xx = getX() + x;
 		int yy = getY() + y;
-		if (withinBounds(xx, yy) && (board[xx][yy] == null || board[xx][yy].getColor() != getColor()) && squareNotAttacked(board, new Pair(xx, yy))) {
+		if (withinBounds(xx, yy) && (board[xx][yy] == null || board[xx][yy].getColor() != getColor()) && squareNotAttacked(board, new Pair(xx, yy))
+				&& noKingNear(board, xx, yy)) {
 			getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
 		}
+	}
+	
+	private boolean noKingNear(Piece[][] board, int x, int y) {
+		Piece[][] copy = deepCopyBoard(board);
+		copy[getX()][getY()].placePiece(copy, x, y);;
+		copy[getX()][getY()] = null;
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				if (x + i < 0 || y + j < 0 || x + i == BOARD_SIZE || y + j == BOARD_SIZE || (i == 0 && j == 0)) {
+					continue;
+				}
+				if (board[x + i][y + j] != null && board[x + i][y + j].getSymbol() == 'K' && board[x + i][y + j].getColor() != getColor()) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 	private boolean checkRookBishop(Piece[][] board, int addx, int addy, char c) {
@@ -122,28 +140,28 @@ public class King extends Piece {
 		int xx = getX();
 		int yy = getY();
 		if (withinBounds(xx+2, yy+1) && board[xx+2][yy+1] != null && board[xx+2][yy+1].getColor() != getColor()
-				 && board[xx+2][yy+1].getSymbol() == 'K') {
+				 && board[xx+2][yy+1].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx-2, yy+1) && board[xx-2][yy+1] != null && board[xx-2][yy+1].getColor() != getColor()
-				&& board[xx-2][yy+1].getSymbol() == 'K') {
+				&& board[xx-2][yy+1].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx+2, yy-1) && board[xx+2][yy-1] != null && board[xx+2][yy-1].getColor() != getColor()
-				&& board[xx+2][yy-1].getSymbol() == 'K') {
+				&& board[xx+2][yy-1].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx-2, yy-1) && board[xx-2][yy-1] != null && board[xx-2][yy-1].getColor() != getColor()
-				&& board[xx-2][yy-1].getSymbol() == 'K') {
+				&& board[xx-2][yy-1].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx+1, yy+2) && board[xx+1][yy+2] != null && board[xx+1][yy+2].getColor() != getColor()
-				&& board[xx+1][yy+2].getSymbol() == 'K') {
+				&& board[xx+1][yy+2].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx-1, yy+2) && board[xx-1][yy+2] != null && board[xx-1][yy+2].getColor() != getColor()
-				&& board[xx-1][yy+2].getSymbol() == 'K') {
+				&& board[xx-1][yy+2].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx+1, yy-2) && board[xx+1][yy-2] != null && board[xx+1][yy-2].getColor() != getColor()
-				&& board[xx+1][yy-2].getSymbol() == 'K') {
+				&& board[xx+1][yy-2].getSymbol() == 'H') {
 			return true;
 		} else if (withinBounds(xx-1, yy-2) && board[xx-1][yy-2] != null && board[xx-1][yy-2].getColor() != getColor()
-				&& board[xx-1][yy-2].getSymbol() == 'K') {
+				&& board[xx-1][yy-2].getSymbol() == 'H') {
 			return true;
 		}
 		

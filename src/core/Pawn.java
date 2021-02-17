@@ -23,7 +23,7 @@ public class Pawn extends Piece {
 			if (super.withinBounds(xx-1, yy) && board[xx-1][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy)))) {
 				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy)));
 			}
-			if (super.withinBounds(xx-2, yy) && super.getMoves() == 0 && board[xx-2][yy] == null 
+			if (super.withinBounds(xx-2, yy) && super.getMoves() == 0 && board[xx-2][yy] == null && board[xx-1][yy] == null
 					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy)))) {
 				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy)));
 			}
@@ -39,7 +39,7 @@ public class Pawn extends Piece {
 			if (super.withinBounds(xx+1, yy) && board[xx+1][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy)));
 			}
-			if (super.withinBounds(xx+2, yy) && super.getMoves() == 0 && board[xx+2][yy] == null
+			if (super.withinBounds(xx+2, yy) && super.getMoves() == 0 && board[xx+2][yy] == null && board[xx+1][yy] == null
 					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy)))) {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy)));
 			}

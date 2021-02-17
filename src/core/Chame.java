@@ -182,20 +182,25 @@ public class Chame extends JPanel implements ActionListener {
 		logic = new GameLogic();
 		logic.setupBoard();
 		logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
+		
 		try {
 			while (!logic.isGameOver()) {
+				TimeUnit.MILLISECONDS.sleep(5);
 				System.out.println("count: " + logic.countPieceMoves(logic.getBoard(), logic.currentColour()));
 				updateGraphics();
-//				logic.pawnPromoteSelect();
-				
-				while (logic.isPlayerTurn()) {
-					
-					TimeUnit.MILLISECONDS.sleep(5);
+				if (logic.getNumMoves() % 2 == 0) {
+					while (logic.isPlayerTurn()) {
+						
+						TimeUnit.MILLISECONDS.sleep(5);
+					}
+					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
+					logic.setPlayerTurn(true);
+					logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
+				} else {
+					logic.makeBotMove();
+					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
+					logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				}
-//				logic.checkPawnPromotes(logic.getBoard(), !logic.currentColour(), true);
-				logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
-				logic.setPlayerTurn(true);
-				logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				
 			}
 			updateGraphics();
@@ -232,7 +237,7 @@ public class Chame extends JPanel implements ActionListener {
 			} else {
 				System.out.println("second");
 				if (logic.tryMove(first.getX(), first.getY(), j, i)) {
-					logic.makeGameMove(first.getX(), first.getY(), j, i);
+					logic.makeGameMove(first.getX(), first.getY(), j, i, true);
 				}
 				first.setX(-1);
 				first.setY(-1);

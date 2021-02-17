@@ -140,6 +140,7 @@ public abstract class Piece {
 		return null; // should be unreachable
 	}
 	
+	
 	/*
 	 * Function to return a deep copy of the board, so original object values aren't changed when checking future possible moves.
 	 */

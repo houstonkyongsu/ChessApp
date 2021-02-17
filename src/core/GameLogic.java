@@ -15,6 +15,7 @@ public class GameLogic {
 	private King wK;
 	private ArrayList<Move> moves;
 	private boolean inCheck;
+	private Move bestMove;
 	
 	public GameLogic() {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
@@ -22,6 +23,7 @@ public class GameLogic {
 		inCheck = false;
 		setPlayerTurn(true);
 		moves = new ArrayList<>();
+		bestMove = null;
 	}
 	
 	public boolean isPlayerTurn() {
@@ -42,6 +44,10 @@ public class GameLogic {
 	
 	public int getNumMoves() {
 		return numMoves;
+	}
+	
+	public Move getBestMove() {
+		return bestMove;
 	}
 	
 	public boolean currentColour() {
@@ -147,9 +153,21 @@ public class GameLogic {
 		} else {
 			inCheck = false;
 		}
-		if (countPieceMoves(board, col) == 0) {
+		if (countPieceMoves(board, col) == 0 || onlyKingsLeft(board)) {
 			gameOver = true;
 		}
+	}
+	
+	public boolean onlyKingsLeft(Piece[][] board) {
+		int count = 0;
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] != null) {
+					count++;
+				}
+			}
+		}
+		return count == 2;
 	}
 	
 	public boolean tryMove(int x1, int y1, int x2, int y2) {
@@ -163,7 +181,14 @@ public class GameLogic {
 		return false;
 	}
 	
-	public void makeGameMove(int x1, int y1, int x2, int y2) {
+	/**
+	 *  Function to apply the given move to the board, update the move count and check for any pawn promotions
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	public void makeGameMove(int x1, int y1, int x2, int y2, boolean user) {
 		getChildPiece(board[x1][y1]).placePiece(board, x2, y2);
 		board[x1][y1] = null;
 		if (board[x2][y2].getSymbol() == 'K' && board[x2][y2].getMoves() == 1 && Math.abs(y1-y2) > 1) {
@@ -175,9 +200,17 @@ public class GameLogic {
 				board[x2][0] = null;
 			}
 		}
-		checkPawnPromotes(board, getChildPiece(board[x2][y2]).getColor(), true);
+		checkPawnPromotes(board, getChildPiece(board[x2][y2]).getColor(), user);
 		numMoves++;
 		playerTurn = false;
+	}
+	
+	public void makeBotMove() {
+//		Move m = chooseRandomMove(getBoard(), currentColour());
+		alphaBeta(getBoard(), 0, 10, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		Move m = getBestMove();
+		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
+//		playerTurn = true;
 	}
 	
 	/**
@@ -221,7 +254,7 @@ public class GameLogic {
 	}
 	
 	/**
-	 *  debug function to print board state
+	 *  Debug function to print board state
 	 */
 	public void printBoard() {
 		for (int i = 0; i < BOARD_SIZE; i++) {
@@ -237,20 +270,99 @@ public class GameLogic {
 		}
 	}
 	
-	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta, int feature) {
+	/**
+	 *  Simple static board evaluation heuristic which returns the total of all the players pieces
+	 *  values, minus the total of the opponents pieces values.
+	 * @param brd
+	 * @param col
+	 * @return
+	 */
+	private int evalBoardStatic(Piece[][] brd, boolean col) {
+		int players = 0, opponent = 0;
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (brd[i][j] != null && brd[i][j].getColor() == col) {
+					players += getPieceValue(brd[i][j].getSymbol());
+				} else if (brd[i][j] != null) {
+					opponent += getPieceValue(brd[i][j].getSymbol());
+				}
+			}
+		}
+		return players - opponent;
+	}
+	
+	/**
+	 *  Function to return a piece's static point value.
+	 * @param c
+	 * @return
+	 */
+	private int getPieceValue(char c) {
+		switch (c) {
+			case 'Q':
+				return 10;
+			case 'R':
+				return 5;
+			case 'B':
+				return 3;
+			case 'H':
+				return 3;
+			case 'P':
+				return 1;
+			default:
+				return 0;
+		}
+	}
+	
+	/**
+	 *  Function to randomly return one of the moves from the move list
+	 * @param board
+	 * @param col
+	 * @return
+	 */
+	public Move chooseRandomMove(Piece[][] board, boolean col) {
+		ArrayList<Move> moves = returnLegalMoves(col, board);
+		Random random = new Random();
+		return moves.get(random.nextInt(moves.size()));
+	}
+	
+	/**
+	 *  Minimax search with alpha-beta pruning. This function explores the game tree and for each possible move, evaluates the
+	 *  board using one of the heuristic board evaluation functions, so moves can be compared to each other. The best move is
+	 *  stored as alpha or beta depending on who's move is being explored, and this can be used to prune other branches in the
+	 *  search tree, if they are too high / low.
+	 * @param board
+	 * @param depth
+	 * @param maxDepth
+	 * @param col
+	 * @param max
+	 * @param alpha
+	 * @param beta
+	 * @return
+	 */
+	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta) {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
-        Collections.shuffle(moves, new Random());
+        Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
         //If max depth reached or game is over or if there are no legal moves
-        if (depth == maxDepth || moves.size() == 0) {
-            return 0;
+        if (moves.size() == 0) {
+        	System.out.println("no moves");
+        	if (depth % 2 == 0) {
+        		return -100;
+        	} else {
+        		return 100;
+        	}
+        } else if (depth == maxDepth) {
+            return evalBoardStatic(board, col);
         }
-        int bestScore = -1;
+        int bestScore = Integer.MIN_VALUE;
         Move bestM = null;
         for (Move m : moves) {
             Piece[][] newBoard = deepCopyBoard(board);
-//            placeMove(p.getX(), p.getY(), col, newBoard);
-            int v = alphaBeta(newBoard, depth+1, maxDepth, !col, !max, alpha, beta, feature);
+            Pair p1 = m.getStart();
+            Pair p2 = m.getEnd();
+            newBoard[p1.getX()][p1.getY()].placePiece(newBoard, p2.getX(), p2.getY());
+            newBoard[p1.getX()][p1.getY()] = null;
+            int v = alphaBeta(newBoard, depth+1, maxDepth, !col, !max, alpha, beta);
             if (max) {
                 if (bestScore < v || bestM == null) {
                     bestScore = v;
@@ -277,8 +389,8 @@ public class GameLogic {
                 }
             }
         }
-
-        return 0;
+        bestMove = bestM;
+        return bestScore;
     }
 	
 	/**
