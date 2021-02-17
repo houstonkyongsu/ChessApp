@@ -40,6 +40,7 @@ public class King extends Piece {
 				|| checkRookBishop(board, -1, -1, 'B')
 				|| checkRookBishop(board, 1, -1, 'B')
 				|| checkRookBishop(board, -1, 1, 'B')) {
+			System.out.println("king is checked");
 			return true;
 		}
 		return false;
@@ -49,7 +50,7 @@ public class King extends Piece {
 		Piece[][] copy = deepCopyBoard(board);
 		copy[getX()][getY()].placePiece(copy, p1.getX(), p1.getY());;
 		copy[getX()][getY()] = null;
-		if (getKing(copy, getColor()).isChecked(copy)) {
+		if (((King) copy[p1.getX()][p1.getY()]).isChecked(copy)) {
 			return false;
 		}
 		return true;
@@ -72,7 +73,7 @@ public class King extends Piece {
 	private void checkSafeMove(Piece[][] board, int x, int y) {
 		int xx = getX() + x;
 		int yy = getY() + y;
-		if (withinBounds(xx, yy) && (board[xx][yy] == null || board[xx][yy].getColor() != getColor()) && !isChecked(board)) {
+		if (withinBounds(xx, yy) && (board[xx][yy] == null || board[xx][yy].getColor() != getColor()) && squareNotAttacked(board, new Pair(xx, yy))) {
 			getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
 		}
 	}
