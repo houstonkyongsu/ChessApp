@@ -11,6 +11,7 @@ public class Knight extends Piece {
 	public Knight copyPiece() {
 		Knight k = new Knight(getX(), getY(), getColor());
 		k.setMoveList(getMoveList());
+		k.setMoves(getMoves());
 		return k;
 	}
 	

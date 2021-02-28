@@ -11,6 +11,7 @@ public class Bishop extends Piece {
 	public Bishop copyPiece() {
 		Bishop b = new Bishop(getX(), getY(), getColor());
 		b.setMoveList(getMoveList());
+		b.setMoves(getMoves());
 		return b;
 	}
 	

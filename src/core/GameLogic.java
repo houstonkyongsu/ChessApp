@@ -85,9 +85,10 @@ public class GameLogic {
 				if (board[i][j] != null) {
 					if (board[i][j].getColor() == col) {
 						getChildPiece(board[i][j]).updateMoveList(board);
-					} else {
-						board[i][j].clearMoveList();
-					}
+					} 
+//					else {
+//						board[i][j].clearMoveList();
+//					}
 				}
 			}
 		}
@@ -136,6 +137,10 @@ public class GameLogic {
 		}
 	}
 	
+	/**
+	 *  Function to open a popup dialog to let a user select which piece to promote their pawn to.
+	 * @return
+	 */
 	public int pawnPromoteSelect() {
 		String[] options = {"Queen",
 		                    "Rook",
@@ -153,23 +158,42 @@ public class GameLogic {
 		} else {
 			inCheck = false;
 		}
-		if (countPieceMoves(board, col) == 0 || onlyKingsLeft(board)) {
+		if (countPieceMoves(board, col) == 0 || checkNotDraw(board)) {
 			gameOver = true;
 		}
 	}
 	
-	public boolean onlyKingsLeft(Piece[][] board) {
+	/**
+	 *  Function to return true if the game is drawn (either only kings left, or one side has a king and knight
+	 *  or king and bishop, which is a draw by insufficient material) 
+	 * @param board
+	 * @return
+	 */
+	public boolean checkNotDraw(Piece[][] board) {
 		int count = 0;
+		int pieces = 0;
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
 				if (board[i][j] != null) {
 					count++;
+				} else if (board[i][j] != null && (board[i][j].getSymbol() == 'H' || board[i][j].getSymbol() == 'B')) {
+					pieces++;
 				}
 			}
 		}
-		return count == 2;
+		return count == 2 || (count == 3 && pieces == 1);
 	}
 	
+	/**
+	 *  Function to test if a given move is possible, first by checking that it designates a piece position on the board
+	 *  and the new position is either empty or to a piece of the opposite colour. If these are true, then the function
+	 *  calls the moveInMoveList function.
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @return
+	 */
 	public boolean tryMove(int x1, int y1, int x2, int y2) {
 		Piece p1 = board[x1][y1];
 		Piece p2 = board[x2][y2];
@@ -203,14 +227,6 @@ public class GameLogic {
 		checkPawnPromotes(board, getChildPiece(board[x2][y2]).getColor(), user);
 		numMoves++;
 		playerTurn = false;
-	}
-	
-	public void makeBotMove() {
-//		Move m = chooseRandomMove(getBoard(), currentColour());
-		alphaBeta(getBoard(), 0, 10, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		Move m = getBestMove();
-		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
-//		playerTurn = true;
 	}
 	
 	/**
@@ -270,6 +286,18 @@ public class GameLogic {
 		}
 	}
 	
+	public void makeBotMove() {
+//		Move m = chooseRandomMove(getBoard(), currentColour());
+		alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		Move m = getBestMove();
+		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
+//		playerTurn = true;
+	}
+	
+	private int linearCombination(Piece[][] brd, boolean col) {
+		return 1 * evalBoardStatic(brd, col) + evalMobilityGeneral(brd, col);
+	}
+	
 	/**
 	 *  Simple static board evaluation heuristic which returns the total of all the players pieces
 	 *  values, minus the total of the opponents pieces values.
@@ -292,6 +320,27 @@ public class GameLogic {
 	}
 	
 	/**
+	 *  General mobility heuristic which seek to maximise player mobility and minimise opponent mobility,
+	 *  where mobility is the number of currently available legal moves.
+	 * @param brd
+	 * @param col
+	 * @return
+	 */
+	private int evalMobilityGeneral(Piece[][] brd, boolean col) {
+		int players = 0, opponent = 0;
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (brd[i][j] != null && brd[i][j].getColor() == col) {
+					players += brd[i][j].getMoveList().size();
+				} else if (brd[i][j] != null) {
+					opponent += brd[i][j].getMoveList().size();
+				}
+			}
+		}
+		return players - opponent;
+	}
+	
+	/**
 	 *  Function to return a piece's static point value.
 	 * @param c
 	 * @return
@@ -299,15 +348,15 @@ public class GameLogic {
 	private int getPieceValue(char c) {
 		switch (c) {
 			case 'Q':
-				return 10;
+				return 100;
 			case 'R':
-				return 5;
+				return 50;
 			case 'B':
-				return 3;
+				return 30;
 			case 'H':
-				return 3;
+				return 30;
 			case 'P':
-				return 1;
+				return 10;
 			default:
 				return 0;
 		}
@@ -345,14 +394,13 @@ public class GameLogic {
         Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
         //If max depth reached or game is over or if there are no legal moves
         if (moves.size() == 0) {
-        	System.out.println("no moves");
         	if (depth % 2 == 0) {
         		return -100;
         	} else {
         		return 100;
         	}
         } else if (depth == maxDepth) {
-            return evalBoardStatic(board, col);
+            return linearCombination(board, col);
         }
         int bestScore = Integer.MIN_VALUE;
         Move bestM = null;
@@ -404,8 +452,8 @@ public class GameLogic {
 		ArrayList<Move> fullList = new ArrayList<Move>();
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
-				if (board[i][j] != null && board[i][j].getColor() == col) {
-					fullList.addAll(getChildPiece(board[i][j]).getMoveList());
+				if (brd[i][j] != null && brd[i][j].getColor() == col) {
+					fullList.addAll(getChildPiece(brd[i][j]).getMoveList());
 				}
 			}
 		}

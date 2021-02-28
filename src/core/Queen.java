@@ -11,6 +11,7 @@ public class Queen extends Piece {
 	public Queen copyPiece() {
 		Queen q = new Queen(getX(), getY(), getColor());
 		q.setMoveList(getMoveList());
+		q.setMoves(getMoves());
 		return q;
 	}
 

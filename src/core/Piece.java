@@ -120,7 +120,7 @@ public abstract class Piece {
 		Pair p1 = m.getStart();
 		Pair p2 = m.getEnd();
 		copy[p1.getX()][p1.getY()].placePiece(copy, p2.getX(), p2.getY());
-		boolean col = copy[p1.getX()][p1.getY()].getColor();
+		boolean col = copy[p2.getX()][p2.getY()].getColor();
 		copy[p1.getX()][p1.getY()] = null;
 		if (getKing(copy, col).isChecked(copy)) {
 			return false;
