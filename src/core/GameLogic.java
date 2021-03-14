@@ -151,7 +151,7 @@ public class GameLogic {
 		return returnVal;
 	}
 	
-	public void checkGameNotOver(Piece[][] board, boolean col) {
+	public boolean checkGameNotOver(Piece[][] board, boolean col) {
 		King k = (col) ? wK : bK;
 		if (k.isChecked(board)) {
 			inCheck = true;
@@ -160,7 +160,9 @@ public class GameLogic {
 		}
 		if (countPieceMoves(board, col) == 0 || checkNotDraw(board)) {
 			gameOver = true;
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -197,8 +199,12 @@ public class GameLogic {
 	public boolean tryMove(int x1, int y1, int x2, int y2) {
 		Piece p1 = board[x1][y1];
 		Piece p2 = board[x2][y2];
-		if (p1 != null && (p2 == null || p2.getColor() != p1.getColor())) {
-			if (moveInMoveList(p1, new Move(new Pair(x1, y1),new Pair(x2, y2)))) {
+		if (p1 != null && p2 == null) {
+			if (moveInMoveList(p1, new Move(new Pair(x1, y1),new Pair(x2, y2), false))) {
+				return true;
+			}
+		} else if (p1 != null && p2.getColor() != p1.getColor()) {
+			if (moveInMoveList(p1, new Move(new Pair(x1, y1),new Pair(x2, y2), true))) {
 				return true;
 			}
 		}
@@ -286,14 +292,22 @@ public class GameLogic {
 		}
 	}
 	
+	
 	public void makeBotMove() {
 //		Move m = chooseRandomMove(getBoard(), currentColour());
-		alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
 		Move m = getBestMove();
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 //		playerTurn = true;
 	}
 	
+	/**
+	 *  This is the evaluation function to be used by the alpha-beta pruning function. It is a linear combination
+	 *  of multiple heuristics.
+	 * @param brd
+	 * @param col
+	 * @return
+	 */
 	private int linearCombination(Piece[][] brd, boolean col) {
 		return 1 * evalBoardStatic(brd, col) + evalMobilityGeneral(brd, col);
 	}
@@ -378,7 +392,7 @@ public class GameLogic {
 	 *  Minimax search with alpha-beta pruning. This function explores the game tree and for each possible move, evaluates the
 	 *  board using one of the heuristic board evaluation functions, so moves can be compared to each other. The best move is
 	 *  stored as alpha or beta depending on who's move is being explored, and this can be used to prune other branches in the
-	 *  search tree, if they are too high / low.
+	 *  search tree, if they are too high / low. If a leaf node is a take, then quiescence search is used to evaluate the board.
 	 * @param board
 	 * @param depth
 	 * @param maxDepth
@@ -386,9 +400,10 @@ public class GameLogic {
 	 * @param max
 	 * @param alpha
 	 * @param beta
+	 * @param isTake
 	 * @return
 	 */
-	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta) {
+	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta, boolean isTake) {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
         Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
@@ -400,6 +415,9 @@ public class GameLogic {
         		return 100;
         	}
         } else if (depth == maxDepth) {
+        	if (isTake) {
+        		return quiescenceSearch(board, 0, 2, col, max, alpha, beta);
+        	}
             return linearCombination(board, col);
         }
         int bestScore = Integer.MIN_VALUE;
@@ -410,7 +428,7 @@ public class GameLogic {
             Pair p2 = m.getEnd();
             newBoard[p1.getX()][p1.getY()].placePiece(newBoard, p2.getX(), p2.getY());
             newBoard[p1.getX()][p1.getY()] = null;
-            int v = alphaBeta(newBoard, depth+1, maxDepth, !col, !max, alpha, beta);
+            int v = alphaBeta(newBoard, depth+1, maxDepth, !col, !max, alpha, beta, m.isTake());
             if (max) {
                 if (bestScore < v || bestM == null) {
                     bestScore = v;
@@ -440,6 +458,74 @@ public class GameLogic {
         bestMove = bestM;
         return bestScore;
     }
+	
+	public int quiescenceSearch(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta) {
+		updatePieceMoves(board, col);
+        ArrayList<Move> moves = returnLegalMoves(col, board);
+        removeNonTakeMoves(moves);
+        Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
+        if (checkGameNotOver(board, col)) {
+        	if (depth % 2 == 0) {
+        		return -100;
+        	} else {
+        		return 100;
+        	}
+        } else if (depth == maxDepth || moves.size() == 0) {
+            return linearCombination(board, col);
+        }
+        int bestScore = Integer.MIN_VALUE;
+        Move bestM = null;
+        for (Move m : moves) {
+            Piece[][] newBoard = deepCopyBoard(board);
+            Pair p1 = m.getStart();
+            Pair p2 = m.getEnd();
+            newBoard[p1.getX()][p1.getY()].placePiece(newBoard, p2.getX(), p2.getY());
+            newBoard[p1.getX()][p1.getY()] = null;
+            int v = quiescenceSearch(newBoard, depth+1, maxDepth, !col, !max, alpha, beta);
+            if (max) {
+                if (bestScore < v || bestM == null) {
+                    bestScore = v;
+                    bestM = m;
+                    //set alpha to highest score so far
+                    if (bestScore > alpha) {
+                        alpha = bestScore;
+                    }
+                    //if beta less than alpha, stop searching child nodes
+                    if (beta <= alpha) {
+                        break;
+                    }
+                }
+            } else {
+                if (bestScore > v || bestM == null) {
+                    bestScore = v;
+                    bestM = m;
+                    if (bestScore < beta) {
+                        beta = bestScore;
+                    }
+                    if (beta <= alpha) {
+                        break;
+                    }
+                }
+            }
+        }
+        bestMove = bestM;
+        return bestScore;
+    }
+	
+	/**
+	 *  Function to remove any moves from the given move list which are not takes. This function is used in
+	 *  the quiescence search function, so only the 'unstable' moves will be explored.
+	 * @param list
+	 */
+	private void removeNonTakeMoves(ArrayList<Move> list) {
+		Iterator<Move> iter = list.iterator();
+		while (iter.hasNext()) {
+			if (!iter.next().isTake()) {
+				iter.remove();
+			}
+		}
+		
+	}
 	
 	/**
 	 *  Function to return a combined list of all the available legal moves for a given colour, by

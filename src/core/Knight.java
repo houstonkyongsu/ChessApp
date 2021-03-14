@@ -20,36 +20,68 @@ public class Knight extends Piece {
 		int xx = super.getX();
 		int yy = super.getY();
 		if (super.withinBounds(xx+2, yy+1) && (board[xx+2][yy+1] == null || board[xx+2][yy+1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), false))) {
+			if (board[xx+2][yy+1] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), true));
+			}
 		}
 		if (super.withinBounds(xx-2, yy+1) && (board[xx-2][yy+1] == null || board[xx-2][yy+1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), false))) {
+			if (board[xx-2][yy+1] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), true));
+			}
 		}
 		if (super.withinBounds(xx+2, yy-1) && (board[xx+2][yy-1] == null || board[xx+2][yy-1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), false))) {
+			if (board[xx+2][yy-1] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), true));
+			}
 		}
 		if (super.withinBounds(xx-2, yy-1) && (board[xx-2][yy-1] == null || board[xx-2][yy-1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), false))) {
+			if (board[xx-2][yy-1] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), true));
+			}
 		}
 		if (super.withinBounds(xx+1, yy+2) && (board[xx+1][yy+2] == null || board[xx+1][yy+2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), false))) {
+			if (board[xx+1][yy+2] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), true));
+			}
 		}
 		if (super.withinBounds(xx-1, yy+2) && (board[xx-1][yy+2] == null || board[xx-1][yy+2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), false))) {
+			if (board[xx-1][yy+2] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), true));
+			}
 		}
 		if (super.withinBounds(xx+1, yy-2) && (board[xx+1][yy-2] == null || board[xx+1][yy-2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), false))) {
+			if (board[xx+1][yy-2] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), true));
+			}
 		}
 		if (super.withinBounds(xx-1, yy-2) && (board[xx-1][yy-2] == null || board[xx-1][yy-2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2)))) {
-			super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2)));
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), false))) {
+			if (board[xx-1][yy-2] == null) {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), false));
+			} else {
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), true));
+			}
 		}
 	}
 

@@ -99,10 +99,10 @@ public abstract class Piece {
 			if (!withinBounds(xx, yy)) {
 				break;
 			}
-			if (board[xx][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
-				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
-			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy)))) {
-				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy)));
+			if (board[xx][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), false))) {
+				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), false));
+			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), true))) {
+				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), true));
 				break;
 			} else {
 				break;
