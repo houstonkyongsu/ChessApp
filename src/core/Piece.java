@@ -119,6 +119,9 @@ public abstract class Piece {
 		Piece[][] copy = deepCopyBoard(board);
 		Pair p1 = m.getStart();
 		Pair p2 = m.getEnd();
+//		if (board[][]) {
+//			
+//		}
 		copy[p1.getX()][p1.getY()].placePiece(copy, p2.getX(), p2.getY());
 		boolean col = copy[p2.getX()][p2.getY()].getColor();
 		copy[p1.getX()][p1.getY()] = null;
@@ -129,12 +132,19 @@ public abstract class Piece {
 	}
 	
 	public King getKing(Piece[][] board, boolean col) {
+		int count = 0;
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
 				if (board[i][j] != null && board[i][j].getSymbol() == 'K' && board[i][j].getColor() == col) {
 					return (King) board[i][j];
 				}
+				if (board[i][j] != null && board[i][j].getSymbol() == 'K') {
+					count++;
+				}
 			}
+		}
+		if (count == 2) {
+			System.out.println("found");			
 		}
 		System.out.println("null pointer about to be thrown, deep copy method not working");
 		return null; // should be unreachable

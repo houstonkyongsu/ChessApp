@@ -1,6 +1,8 @@
 package core;
 
 import javax.swing.border.*;
+import javax.swing.plaf.basic.BasicArrowButton;
+
 import java.awt.image.*;
 import java.io.IOException;
 import java.util.*;
@@ -146,11 +148,30 @@ public class Chame extends JPanel implements ActionListener {
                 board.add(gridSquares[i][j]);
             }
         }
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+        BasicArrowButton b1 = new BasicArrowButton(BasicArrowButton.WEST);
+        b1.setName("left");
+        BasicArrowButton b2 = new BasicArrowButton(BasicArrowButton.EAST);
+        b2.setName("right");
+        b1.addActionListener(this);
+        b2.addActionListener(this);
+//        b1.setPreferredSize(new Dimension(100, 100));
+//        b1.setMinimumSize(new Dimension(100, 100));
+//        b2.setMinimumSize(new Dimension(100, 100));
+//        b2.setPreferredSize(new Dimension(100, 100));
+        panel.add(b1);
+        panel.add(b2);
         ui = new JPanel();
+        ui.setLayout(new BoxLayout(ui, BoxLayout.PAGE_AXIS));
         ui.add(board);
+        ui.add(panel);
         
 	}
 	
+	/**
+	 *  Function to update the graphics based on the current board state
+	 */
 	public void updateGraphics() {
         Piece[][] brd = logic.getBoard();
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -165,7 +186,7 @@ public class Chame extends JPanel implements ActionListener {
                 	key += brd[i][j].getSymbol();
                 	Image temp = iconmap.get(key);
                 	if (temp != null) {
-                		Image img = temp.getScaledInstance( 64, 64,  java.awt.Image.SCALE_SMOOTH ) ;
+                		Image img = temp.getScaledInstance(64, 64, java.awt.Image.SCALE_SMOOTH);
                     	gridSquares[i][j].setIcon(new ImageIcon(img));
                 	} else {
                 		System.out.println("key '" + key + "' not in hashmap");
@@ -195,12 +216,13 @@ public class Chame extends JPanel implements ActionListener {
 					}
 					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
 					logic.setPlayerTurn(true);
-					logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				} else {
-					logic.makeBotMove();
+//					TimeUnit.SECONDS.sleep(1);
+					logic.makeSmartBotMove();
+//					logic.makeRandomBotMove();
 					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
-					logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				}
+				logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				
 			}
 			updateGraphics();
@@ -227,7 +249,7 @@ public class Chame extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton b = (JButton) e.getSource();
-		if (b != null && logic.isPlayerTurn()) {
+		if (b != null && logic.isPlayerTurn() && b.getName() == null) {
 			int i = (int) b.getClientProperty("row");
 			int j = (int) b.getClientProperty("col");
 			if (first.getX() == -1) {
@@ -241,6 +263,12 @@ public class Chame extends JPanel implements ActionListener {
 				}
 				first.setX(-1);
 				first.setY(-1);
+			}
+		} else if (b != null && b.getName() != null && logic.isGameOver()) {
+			if (b.getName().equals("left")) {
+				System.out.println("left");
+			} else {
+				System.out.println("right");
 			}
 		}
 	}

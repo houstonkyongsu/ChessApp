@@ -11,19 +11,19 @@ public class GameLogic {
 	private int numMoves = 0;
 	private boolean gameOver;
 	private boolean playerTurn;
-	private King bK;
-	private King wK;
-	private ArrayList<Move> moves;
 	private boolean inCheck;
 	private Move bestMove;
+	private ArrayList<Move> moveHistory;
+	private int historyIndex;
 	
 	public GameLogic() {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
 		gameOver = false;
 		inCheck = false;
 		setPlayerTurn(true);
-		moves = new ArrayList<>();
+		moveHistory = new ArrayList<>();
 		bestMove = null;
+		historyIndex = 0;
 	}
 	
 	public boolean isPlayerTurn() {
@@ -54,6 +54,36 @@ public class GameLogic {
 		return numMoves % 2 == 0;
 	}
 	
+	public void moveBack() {
+		if (moveHistory.size() > 0 && historyIndex > 0) {
+			
+			historyIndex--;
+		}
+	}
+	
+	public void moveForward() {
+		if (moveHistory.size() > 0 && historyIndex < moveHistory.size()) {
+			Move m = moveHistory.get(historyIndex);
+			
+			historyIndex++;
+		}
+	}
+	
+	/**
+	 *  Function to clear all the pieces off the board
+	 */
+	public void clearBoard() {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				board[i][j] = null;
+			}
+		}
+		historyIndex = 0;
+	}
+	
+	/**
+	 *  Function to set up the pieces on the board
+	 */
 	public void setupBoard() {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			board[1][i] = new Pawn(1, i, false);
@@ -75,8 +105,6 @@ public class GameLogic {
 		board[7][3] = new Queen(7, 3, true);
 		board[0][4] = new King(0, 4, false);
 		board[7][4] = new King(7, 4, true);
-		wK = (King) board[7][4];
-		bK = (King) board[0][4];
 	}
 	
 	public void updatePieceMoves(Piece[][] board, boolean col) {
@@ -85,10 +113,7 @@ public class GameLogic {
 				if (board[i][j] != null) {
 					if (board[i][j].getColor() == col) {
 						getChildPiece(board[i][j]).updateMoveList(board);
-					} 
-//					else {
-//						board[i][j].clearMoveList();
-//					}
+					}
 				}
 			}
 		}
@@ -138,7 +163,7 @@ public class GameLogic {
 	}
 	
 	/**
-	 *  Function to open a popup dialog to let a user select which piece to promote their pawn to.
+	 *  Function to open a pop-up dialog to let a user select which piece to promote their pawn to.
 	 * @return
 	 */
 	public int pawnPromoteSelect() {
@@ -151,8 +176,15 @@ public class GameLogic {
 		return returnVal;
 	}
 	
+	/**
+	 *  Function to check if the game is over, by checking if there are no moves left, or checking for a draw
+	 *  by insufficient material.
+	 * @param board
+	 * @param col
+	 * @return
+	 */
 	public boolean checkGameNotOver(Piece[][] board, boolean col) {
-		King k = (col) ? wK : bK;
+		King k = getKing(board, col);
 		if (k.isChecked(board)) {
 			inCheck = true;
 		} else {
@@ -212,13 +244,16 @@ public class GameLogic {
 	}
 	
 	/**
-	 *  Function to apply the given move to the board, update the move count and check for any pawn promotions
+	 *  Function to apply the given move to the board, update the move count and check for any pawn promotions.
+	 *  The move is also added to the move history.
 	 * @param x1
 	 * @param y1
 	 * @param x2
 	 * @param y2
 	 */
 	public void makeGameMove(int x1, int y1, int x2, int y2, boolean user) {
+		Move move = new Move(new Pair(x1, y1), new Pair(x2, y2), board[x2][y2] == null ? false : true);
+		moveHistory.add(move);
 		getChildPiece(board[x1][y1]).placePiece(board, x2, y2);
 		board[x1][y1] = null;
 		if (board[x2][y2].getSymbol() == 'K' && board[x2][y2].getMoves() == 1 && Math.abs(y1-y2) > 1) {
@@ -293,12 +328,16 @@ public class GameLogic {
 	}
 	
 	
-	public void makeBotMove() {
-//		Move m = chooseRandomMove(getBoard(), currentColour());
-		alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+	public void makeSmartBotMove() {
+		int score = alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
 		Move m = getBestMove();
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
-//		playerTurn = true;
+		System.out.println("move score: " + score);
+	}
+	
+	public void makeRandomBotMove() {
+		Move m = chooseRandomMove(getBoard(), currentColour());
+		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 	}
 	
 	/**
@@ -410,13 +449,14 @@ public class GameLogic {
         //If max depth reached or game is over or if there are no legal moves
         if (moves.size() == 0) {
         	if (depth % 2 == 0) {
-        		return -100;
+        		return -1000;
         	} else {
-        		return 100;
+        		return 1000;
         	}
         } else if (depth == maxDepth) {
         	if (isTake) {
-        		return quiescenceSearch(board, 0, 2, col, max, alpha, beta);
+        		Piece[][] newBoard = deepCopyBoard(board);
+        		return quiescenceSearch(newBoard, 0, 1, col, max, alpha, beta);
         	}
             return linearCombination(board, col);
         }
@@ -459,16 +499,29 @@ public class GameLogic {
         return bestScore;
     }
 	
+	/**
+	 *  Quiescence search function, similar to the alpha-beta search function although this one only searches moves
+	 *  which are takes, to a given max depth. This function will be called if a terminal node in the alpha-beta search
+	 *  function is unstable (it represents a take).
+	 * @param board
+	 * @param depth
+	 * @param maxDepth
+	 * @param col
+	 * @param max
+	 * @param alpha
+	 * @param beta
+	 * @return
+	 */
 	public int quiescenceSearch(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta) {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
         removeNonTakeMoves(moves);
         Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
-        if (checkGameNotOver(board, col)) {
+        if (returnLegalMoves(col, board).size() == 0) {
         	if (depth % 2 == 0) {
-        		return -100;
+        		return -1000;
         	} else {
-        		return 100;
+        		return 1000;
         	}
         } else if (depth == maxDepth || moves.size() == 0) {
             return linearCombination(board, col);
@@ -586,5 +639,16 @@ public class GameLogic {
 		return copy;
 	}
 	
+	private King getKing(Piece[][] board, boolean col) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] != null && board[i][j].getSymbol() == 'K' && board[i][j].getColor() == col) {
+					return (King) board[i][j];
+				}
+			}
+		}
+		System.out.println("null pointer about to be thrown, deep copy method not working");
+		return null; // should be unreachable
+	}
 
 }
