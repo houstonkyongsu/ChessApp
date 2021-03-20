@@ -99,10 +99,10 @@ public abstract class Piece {
 			if (!withinBounds(xx, yy)) {
 				break;
 			}
-			if (board[xx][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), false))) {
-				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), false));
-			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), true))) {
-				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), true));
+			if (board[xx][yy] == null && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), 'X'))) {
+				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), 'X'));
+			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()))) {
+				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()));
 				break;
 			} else {
 				break;
@@ -119,9 +119,6 @@ public abstract class Piece {
 		Piece[][] copy = deepCopyBoard(board);
 		Pair p1 = m.getStart();
 		Pair p2 = m.getEnd();
-//		if (board[][]) {
-//			
-//		}
 		copy[p1.getX()][p1.getY()].placePiece(copy, p2.getX(), p2.getY());
 		boolean col = copy[p2.getX()][p2.getY()].getColor();
 		copy[p1.getX()][p1.getY()] = null;

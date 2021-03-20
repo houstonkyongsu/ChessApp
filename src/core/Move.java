@@ -4,16 +4,16 @@ public class Move {
 	
 	private Pair start;
 	private Pair end;
-	private boolean isTake;
+	private char take;
 	
-	public Move(Pair p1, Pair p2, boolean isTake) {
+	public Move(Pair p1, Pair p2, char take) {
 		this.start = p1;
 		this.end = p2;
-		this.isTake = isTake;
+		this.take = take;
 	}
 	
-	public boolean isTake() {
-		return isTake;
+	public char getTake() {
+		return take;
 	}
 
 	public Pair getStart() {

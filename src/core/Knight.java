@@ -20,67 +20,67 @@ public class Knight extends Piece {
 		int xx = super.getX();
 		int yy = super.getY();
 		if (super.withinBounds(xx+2, yy+1) && (board[xx+2][yy+1] == null || board[xx+2][yy+1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), 'X'))) {
 			if (board[xx+2][yy+1] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy+1), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx-2, yy+1) && (board[xx-2][yy+1] == null || board[xx-2][yy+1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), 'X'))) {
 			if (board[xx-2][yy+1] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy+1), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx+2, yy-1) && (board[xx+2][yy-1] == null || board[xx+2][yy-1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), 'X'))) {
 			if (board[xx+2][yy-1] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+2, yy-1), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx-2, yy-1) && (board[xx-2][yy-1] == null || board[xx-2][yy-1].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), 'X'))) {
 			if (board[xx-2][yy-1] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-2, yy-1), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx+1, yy+2) && (board[xx+1][yy+2] == null || board[xx+1][yy+2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), 'X'))) {
 			if (board[xx+1][yy+2] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+2), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx-1, yy+2) && (board[xx-1][yy+2] == null || board[xx-1][yy+2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), 'X'))) {
 			if (board[xx-1][yy+2] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy+2), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx+1, yy-2) && (board[xx+1][yy-2] == null || board[xx+1][yy-2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), 'X'))) {
 			if (board[xx+1][yy-2] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-2), board[xx][yy].getSymbol()));
 			}
 		}
 		if (super.withinBounds(xx-1, yy-2) && (board[xx-1][yy-2] == null || board[xx-1][yy-2].getColor() != super.getColor())
-				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), false))) {
+				&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), 'X'))) {
 			if (board[xx-1][yy-2] == null) {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), false));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), 'X'));
 			} else {
-				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), true));
+				super.getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx-1, yy-2), board[xx][yy].getSymbol()));
 			}
 		}
 	}

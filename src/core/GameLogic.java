@@ -232,11 +232,11 @@ public class GameLogic {
 		Piece p1 = board[x1][y1];
 		Piece p2 = board[x2][y2];
 		if (p1 != null && p2 == null) {
-			if (moveInMoveList(p1, new Move(new Pair(x1, y1),new Pair(x2, y2), false))) {
+			if (moveInMoveList(p1, new Move(new Pair(x1, y1), new Pair(x2, y2), 'X'))) {
 				return true;
 			}
 		} else if (p1 != null && p2.getColor() != p1.getColor()) {
-			if (moveInMoveList(p1, new Move(new Pair(x1, y1),new Pair(x2, y2), true))) {
+			if (moveInMoveList(p1, new Move(new Pair(x1, y1), new Pair(x2, y2), board[x2][y2].getSymbol()))) {
 				return true;
 			}
 		}
@@ -252,7 +252,7 @@ public class GameLogic {
 	 * @param y2
 	 */
 	public void makeGameMove(int x1, int y1, int x2, int y2, boolean user) {
-		Move move = new Move(new Pair(x1, y1), new Pair(x2, y2), board[x2][y2] == null ? false : true);
+		Move move = new Move(new Pair(x1, y1), new Pair(x2, y2), board[x2][y2].getSymbol());
 		moveHistory.add(move);
 		getChildPiece(board[x1][y1]).placePiece(board, x2, y2);
 		board[x1][y1] = null;
@@ -329,7 +329,7 @@ public class GameLogic {
 	
 	
 	public void makeSmartBotMove() {
-		int score = alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+		int score = alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 'X');
 		Move m = getBestMove();
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 		System.out.println("move score: " + score);
@@ -442,7 +442,7 @@ public class GameLogic {
 	 * @param isTake
 	 * @return
 	 */
-	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta, boolean isTake) {
+	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta, char isTake) {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
         Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
@@ -454,7 +454,7 @@ public class GameLogic {
         		return 1000;
         	}
         } else if (depth == maxDepth) {
-        	if (isTake) {
+        	if (isTake != 'X') {
         		Piece[][] newBoard = deepCopyBoard(board);
         		return quiescenceSearch(newBoard, 0, 1, col, max, alpha, beta);
         	}
@@ -468,7 +468,7 @@ public class GameLogic {
             Pair p2 = m.getEnd();
             newBoard[p1.getX()][p1.getY()].placePiece(newBoard, p2.getX(), p2.getY());
             newBoard[p1.getX()][p1.getY()] = null;
-            int v = alphaBeta(newBoard, depth+1, maxDepth, !col, !max, alpha, beta, m.isTake());
+            int v = alphaBeta(newBoard, depth+1, maxDepth, !col, !max, alpha, beta, m.getTake());
             if (max) {
                 if (bestScore < v || bestM == null) {
                     bestScore = v;
@@ -573,7 +573,7 @@ public class GameLogic {
 	private void removeNonTakeMoves(ArrayList<Move> list) {
 		Iterator<Move> iter = list.iterator();
 		while (iter.hasNext()) {
-			if (!iter.next().isTake()) {
+			if (!(iter.next().getTake() == 'X')) {
 				iter.remove();
 			}
 		}

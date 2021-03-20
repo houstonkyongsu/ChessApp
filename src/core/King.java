@@ -60,12 +60,12 @@ public class King extends Piece {
 		if (getMoves() == 0 && board[getX()][getY()+3] != null && board[getX()][getY()+3].getMoves() == 0 && board[getX()][getY()+1] == null && board[getX()][getY()+2] == null
 				 && board[getX()][getY()+3].getSymbol() == 'R') {
 			if (squareNotAttacked(board, new Pair(getX(), getY()+1)) && squareNotAttacked(board, new Pair(getX(), getY()+2))) {
-				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()+2), false));
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()+2), 'X'));
 			}
 		} else if (getMoves() == 0 && board[getX()][getY()-4] != null && board[getX()][getY()-4].getMoves() == 0 && board[getX()][getY()-1] == null && board[getX()][getY()-2] == null
 				 && board[getX()][getY()-3] == null && board[getX()][getY()-4].getSymbol() == 'R') {
 			if (squareNotAttacked(board, new Pair(getX(), getY()-1)) && squareNotAttacked(board, new Pair(getX(), getY()-2))) {
-				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()-2), false));
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(getX(), getY()-2), 'X'));
 			}
 		}
 	}
@@ -76,9 +76,9 @@ public class King extends Piece {
 		if (withinBounds(xx, yy) && (board[xx][yy] == null || board[xx][yy].getColor() != getColor()) && squareNotAttacked(board, new Pair(xx, yy))
 				&& noKingNear(board, xx, yy)) {
 			if (board[xx][yy] == null) {
-				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), false));
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), 'X'));
 			} else {
-				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), true));
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()));
 			}
 		}
 	}
