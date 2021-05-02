@@ -207,21 +207,23 @@ public class Chame extends JPanel implements ActionListener {
 		try {
 			while (!logic.isGameOver()) {
 				TimeUnit.MILLISECONDS.sleep(5);
-//				System.out.println("count: " + logic.countPieceMoves(logic.getBoard(), logic.currentColour()));
+				System.out.println("count: " + logic.countPieceMoves(logic.getBoard(), logic.currentColour()));
 				updateGraphics();
-				if (logic.getNumMoves() % 2 == 0) {
+//				if (logic.getNumMoves() % 2 == 0) {
 					while (logic.isPlayerTurn()) {
 						
 						TimeUnit.MILLISECONDS.sleep(5);
 					}
+					//logic.makeRandomBotMove();
+					
 					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
 					logic.setPlayerTurn(true);
-				} else {
+//				} else {
 //					TimeUnit.SECONDS.sleep(1);
-					logic.makeSmartBotMove();
+//					logic.makeSmartBotMove();
 //					logic.makeRandomBotMove();
-					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
-				}
+//					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
+//				}
 				logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				
 			}

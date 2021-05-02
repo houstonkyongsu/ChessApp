@@ -185,11 +185,7 @@ public class GameLogic {
 	 */
 	public boolean checkGameNotOver(Piece[][] board, boolean col) {
 		King k = getKing(board, col);
-		if (k.isChecked(board)) {
-			inCheck = true;
-		} else {
-			inCheck = false;
-		}
+		inCheck = k.isChecked(board) ? true : false;
 		if (countPieceMoves(board, col) == 0 || checkNotDraw(board)) {
 			gameOver = true;
 			return true;
@@ -252,7 +248,7 @@ public class GameLogic {
 	 * @param y2
 	 */
 	public void makeGameMove(int x1, int y1, int x2, int y2, boolean user) {
-		Move move = new Move(new Pair(x1, y1), new Pair(x2, y2), board[x2][y2].getSymbol());
+		Move move = new Move(new Pair(x1, y1), new Pair(x2, y2), board[x2][y2] == null ? 'X' : board[x2][y2].getSymbol());
 		moveHistory.add(move);
 		getChildPiece(board[x1][y1]).placePiece(board, x2, y2);
 		board[x1][y1] = null;
@@ -329,7 +325,7 @@ public class GameLogic {
 	
 	
 	public void makeSmartBotMove() {
-		int score = alphaBeta(getBoard(), 0, 4, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 'X');
+		int score = alphaBeta(getBoard(), 0, 2, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 'X');
 		Move m = getBestMove();
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 		System.out.println("move score: " + score);
@@ -412,6 +408,12 @@ public class GameLogic {
 				return 10;
 			default:
 				return 0;
+		}
+	}
+	
+	private void orderMoves(ArrayList<Move> moves) {
+		for (Move m : moves) {
+			
 		}
 	}
 	

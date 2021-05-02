@@ -48,8 +48,8 @@ public class Pawn extends Piece {
 				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy-1), board[xx+1][yy-1].getSymbol()));
 			}
 			if (super.withinBounds(xx+1, yy+1) && board[xx+1][yy+1] != null && board[xx+1][yy+1].getColor() != super.getColor()
-					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+1), board[xx+1][yy-1].getSymbol()))) {
-				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+1), board[xx+1][yy-1].getSymbol()));
+					&& noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+1), board[xx+1][yy+1].getSymbol()))) {
+				getMoveList().add(new Move(new Pair(getX(), getY()), new Pair(xx+1, yy+1), board[xx+1][yy+1].getSymbol()));
 			}
 		}
 	}

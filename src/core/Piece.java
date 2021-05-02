@@ -104,8 +104,6 @@ public abstract class Piece {
 			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()))) {
 				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()));
 				break;
-			} else {
-				break;
 			}
 		}
 		return list;
@@ -120,9 +118,13 @@ public abstract class Piece {
 		Pair p1 = m.getStart();
 		Pair p2 = m.getEnd();
 		copy[p1.getX()][p1.getY()].placePiece(copy, p2.getX(), p2.getY());
-		boolean col = copy[p2.getX()][p2.getY()].getColor();
+//		copy[p2.getX()][p2.getY()] = copy[p1.getX()][p1.getY()];
+//		copy[p2.getX()][p2.getY()].setX(p2.getX());
+//		copy[p2.getX()][p2.getY()].setY(p2.getY());
+//		boolean col = copy[p2.getX()][p2.getY()].getColor();
 		copy[p1.getX()][p1.getY()] = null;
-		if (getKing(copy, col).isChecked(copy)) {
+		if (getKing(copy, getColor()).isChecked(copy)) {
+			System.out.println(copy[p2.getX()][p2.getY()].getSymbol() + ": " + p2.getX() + "," + p2.getY());
 			return false;
 		}
 		return true;
@@ -140,9 +142,9 @@ public abstract class Piece {
 				}
 			}
 		}
-		if (count == 2) {
-			System.out.println("found");			
-		}
+//		if (count == 2) {
+//			System.out.println("found");			
+//		}
 		System.out.println("null pointer about to be thrown, deep copy method not working");
 		return null; // should be unreachable
 	}

@@ -1,5 +1,7 @@
 package core;
 
+import java.util.ArrayList;
+
 public class King extends Piece {
 
 	public King(int x, int y, boolean white) {
@@ -40,7 +42,7 @@ public class King extends Piece {
 				|| checkRookBishop(board, -1, -1, 'B')
 				|| checkRookBishop(board, 1, -1, 'B')
 				|| checkRookBishop(board, -1, 1, 'B')) {
-//			System.out.println("king is checked");
+			System.out.println("king is checked");
 			return true;
 		}
 		return false;
