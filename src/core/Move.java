@@ -5,13 +5,12 @@ public class Move {
 	private Pair start;
 	private Pair end;
 	private char take;
-	private int value;
+	private int moveRating = 0;
 	
 	public Move(Pair p1, Pair p2, char take) {
 		this.start = p1;
 		this.end = p2;
 		this.take = take;
-		this.value = getPieceValue(take);
 	}
 	
 	public char getTake() {
@@ -25,10 +24,10 @@ public class Move {
 	public Pair getEnd() {
 		return end;
 	}
-	
-	public int getValue() {
-		return value;
-	}
+
+	public int getMoveRating() { return moveRating; }
+
+	public void setMoveRating(int rating) { this.moveRating = rating; }
 	
 	public boolean compareMove(Move m) {
 		if (m.getStart().comparePair(start) && m.getEnd().comparePair(end)) {

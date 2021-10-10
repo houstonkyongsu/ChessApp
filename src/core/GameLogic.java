@@ -401,7 +401,6 @@ public class GameLogic {
 			case 'R':
 				return 50;
 			case 'B':
-				return 30;
 			case 'H':
 				return 30;
 			case 'P':
@@ -411,9 +410,15 @@ public class GameLogic {
 		}
 	}
 	
-	private void orderMoves(ArrayList<Move> moves) {
+	private void orderMoves(Piece[][] brd, ArrayList<Move> moves) {
 		for (Move m : moves) {
-			
+			int v1 = getPieceValue(brd[m.getStart().getX()][m.getStart().getY()].getSymbol());
+			if (brd[m.getEnd().getX()][m.getEnd().getY()] == null) {
+				m.setMoveRating(0);
+			} else {
+				int v2 = getPieceValue(brd[m.getStart().getX()][m.getStart().getY()].getSymbol());
+				m.setMoveRating(v2 * 10 - v1);
+			}
 		}
 	}
 	
