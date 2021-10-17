@@ -409,8 +409,13 @@ public class GameLogic {
 				return 0;
 		}
 	}
-	
-	private void orderMoves(Piece[][] brd, ArrayList<Move> moves) {
+
+	/**
+	 *  Function to assign each of the moves a rating based on whether it's a capture and what kind of piece is being captured
+	 * @param brd
+	 * @param moves
+	 */
+	private void rateMoves(Piece[][] brd, ArrayList<Move> moves) {
 		for (Move m : moves) {
 			int v1 = getPieceValue(brd[m.getStart().getX()][m.getStart().getY()].getSymbol());
 			if (brd[m.getEnd().getX()][m.getEnd().getY()] == null) {
@@ -452,8 +457,9 @@ public class GameLogic {
 	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta, char isTake) {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
-        Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
-        //If max depth reached or game is over or if there are no legal moves
+        //Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves
+		Collections.sort(moves, Comparator.comparing(Move::getMoveRating)); // sort the moves list
+		//If max depth reached or game is over or if there are no legal moves
         if (moves.size() == 0) {
         	if (depth % 2 == 0) {
         		return -1000;
@@ -461,10 +467,10 @@ public class GameLogic {
         		return 1000;
         	}
         } else if (depth == maxDepth) {
-        	if (isTake != 'X') {
+        	/*if (isTake != 'X') {
         		Piece[][] newBoard = deepCopyBoard(board);
         		return quiescenceSearch(newBoard, 0, 1, col, max, alpha, beta);
-        	}
+        	}*/
             return linearCombination(board, col);
         }
         int bestScore = Integer.MIN_VALUE;
@@ -523,7 +529,8 @@ public class GameLogic {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
         removeNonTakeMoves(moves);
-        Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
+        //Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves
+		Collections.sort(moves, Comparator.comparing(Move::getMoveRating)); // sort the moves list
         if (returnLegalMoves(col, board).size() == 0) {
         	if (depth % 2 == 0) {
         		return -1000;
