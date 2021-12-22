@@ -325,7 +325,8 @@ public class GameLogic {
 	
 	
 	public void makeSmartBotMove() {
-		int score = alphaBeta(getBoard(), 0, 2, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 'X');
+		Piece[][] newBoard = deepCopyBoard(getBoard());
+		int score = alphaBeta(newBoard, 0, 2, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 'X');
 		Move m = getBestMove();
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 		System.out.println("move score: " + score);
@@ -411,10 +412,14 @@ public class GameLogic {
 		}
 	}
 	
-	private void orderMoves(ArrayList<Move> moves) {
+	private void orderMoves(ArrayList<Move> moves, Piece[][] board) {
+		// pass over the move list and assign a value rating the move based on what piece moves and what piece is taken (if any)
 		for (Move m : moves) {
-			
+			int rating = getPieceValue(m.getTake()) - getPieceValue(board[m.getStart().getX()][m.getStart().getY()].getSymbol())/10;
+			m.setValue(rating);
 		}
+		// sort the move list based on these ratings
+		Collections.sort(moves, (Move m1, Move m2) -> m2.getValue() - m1.getValue());
 	}
 	
 	/**
@@ -445,9 +450,17 @@ public class GameLogic {
 	 * @return
 	 */
 	public int alphaBeta(Piece[][] board, int depth, int maxDepth, boolean col, boolean max, int alpha, int beta, char isTake) {
+		if (depth == maxDepth) {
+//        	if (isTake != 'X') {
+//        		Piece[][] newBoard = deepCopyBoard(board);
+//        		return quiescenceSearch(newBoard, 0, 2, col, max, alpha, beta);
+//        	}
+            return linearCombination(board, col);
+        }
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
-        Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
+        //Collections.shuffle(moves, new Random());
+        orderMoves(moves, board);
         //If max depth reached or game is over or if there are no legal moves
         if (moves.size() == 0) {
         	if (depth % 2 == 0) {
@@ -455,12 +468,6 @@ public class GameLogic {
         	} else {
         		return 1000;
         	}
-        } else if (depth == maxDepth) {
-        	if (isTake != 'X') {
-        		Piece[][] newBoard = deepCopyBoard(board);
-        		return quiescenceSearch(newBoard, 0, 1, col, max, alpha, beta);
-        	}
-            return linearCombination(board, col);
         }
         int bestScore = Integer.MIN_VALUE;
         Move bestM = null;
@@ -518,7 +525,8 @@ public class GameLogic {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
         removeNonTakeMoves(moves);
-        Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
+        //Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
+        orderMoves(moves, board);
         if (returnLegalMoves(col, board).size() == 0) {
         	if (depth % 2 == 0) {
         		return -1000;

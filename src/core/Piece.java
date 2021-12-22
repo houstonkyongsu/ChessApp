@@ -104,6 +104,8 @@ public abstract class Piece {
 			} else if (board[xx][yy] != null && board[xx][yy].getColor() != color && noRevealCheck(board, new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()))) {
 				list.add(new Move(new Pair(getX(), getY()), new Pair(xx, yy), board[xx][yy].getSymbol()));
 				break;
+			} else if (board[xx][yy] != null) {
+				break;
 			}
 		}
 		return list;
@@ -124,7 +126,7 @@ public abstract class Piece {
 //		boolean col = copy[p2.getX()][p2.getY()].getColor();
 		copy[p1.getX()][p1.getY()] = null;
 		if (getKing(copy, getColor()).isChecked(copy)) {
-			System.out.println(copy[p2.getX()][p2.getY()].getSymbol() + ": " + p2.getX() + "," + p2.getY());
+			//System.out.println(copy[p2.getX()][p2.getY()].getSymbol() + ": " + p2.getX() + "," + p2.getY());
 			return false;
 		}
 		return true;

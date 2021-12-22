@@ -209,7 +209,7 @@ public class Chame extends JPanel implements ActionListener {
 				TimeUnit.MILLISECONDS.sleep(5);
 				System.out.println("count: " + logic.countPieceMoves(logic.getBoard(), logic.currentColour()));
 				updateGraphics();
-//				if (logic.getNumMoves() % 2 == 0) {
+				if (logic.getNumMoves() % 2 == 0) {
 					while (logic.isPlayerTurn()) {
 						
 						TimeUnit.MILLISECONDS.sleep(5);
@@ -218,12 +218,17 @@ public class Chame extends JPanel implements ActionListener {
 					
 					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
 					logic.setPlayerTurn(true);
-//				} else {
-//					TimeUnit.SECONDS.sleep(1);
-//					logic.makeSmartBotMove();
-//					logic.makeRandomBotMove();
-//					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
-//				}
+				} else {
+					//TimeUnit.SECONDS.sleep(1);
+					long startTime = System.nanoTime();
+
+					logic.makeSmartBotMove();
+					//logic.makeRandomBotMove();
+					
+					long stopTime = System.nanoTime();
+					System.out.println("Time taken by bot: " + (stopTime - startTime));
+					logic.updatePieceMoves(logic.getBoard(), logic.currentColour());
+				}
 				logic.checkGameNotOver(logic.getBoard(), logic.currentColour());
 				
 			}
@@ -255,11 +260,11 @@ public class Chame extends JPanel implements ActionListener {
 			int i = (int) b.getClientProperty("row");
 			int j = (int) b.getClientProperty("col");
 			if (first.getX() == -1) {
-				System.out.println("first");
+				System.out.println("first: " + j + "," + i);
 				first.setX(j);
 				first.setY(i);
 			} else {
-				System.out.println("second");
+				System.out.println("second: " + j + "," + i);
 				if (logic.tryMove(first.getX(), first.getY(), j, i)) {
 					logic.makeGameMove(first.getX(), first.getY(), j, i, true);
 				}

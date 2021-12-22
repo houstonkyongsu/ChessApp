@@ -5,13 +5,12 @@ public class Move {
 	private Pair start;
 	private Pair end;
 	private char take;
-	private int value;
+	private int moveValue;
 	
 	public Move(Pair p1, Pair p2, char take) {
 		this.start = p1;
 		this.end = p2;
 		this.take = take;
-		this.value = getPieceValue(take);
 	}
 	
 	public char getTake() {
@@ -27,7 +26,11 @@ public class Move {
 	}
 	
 	public int getValue() {
-		return value;
+		return moveValue;
+	}
+	
+	public void setValue(int value) {
+		this.moveValue = value;
 	}
 	
 	public boolean compareMove(Move m) {
@@ -35,23 +38,6 @@ public class Move {
 			return true;
 		}
 		return false;
-	}
-	
-	private int getPieceValue(char c) {
-		switch (c) {
-			case 'Q':
-				return 10;
-			case 'R':
-				return 5;
-			case 'B':
-				return 3;
-			case 'H':
-				return 3;
-			case 'P':
-				return 1;
-			default:
-				return 0;
-		}
 	}
 	
 }
