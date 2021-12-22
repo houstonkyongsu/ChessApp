@@ -5,7 +5,7 @@ import java.util.*;
 import javax.swing.JOptionPane;
 
 public class GameLogic {
-	
+
 	final int BOARD_SIZE = 8;
 	private Piece[][] board;
 	private int numMoves = 0;
@@ -15,7 +15,7 @@ public class GameLogic {
 	private Move bestMove;
 	private ArrayList<Move> moveHistory;
 	private int historyIndex;
-	
+
 	public GameLogic() {
 		board = new Piece[BOARD_SIZE][BOARD_SIZE];
 		gameOver = false;
@@ -25,7 +25,7 @@ public class GameLogic {
 		bestMove = null;
 		historyIndex = 0;
 	}
-	
+
 	public boolean isPlayerTurn() {
 		return playerTurn;
 	}
@@ -37,38 +37,38 @@ public class GameLogic {
 	public Piece[][] getBoard() {
 		return board;
 	}
-	
+
 	public boolean isGameOver() {
 		return gameOver;
 	}
-	
+
 	public int getNumMoves() {
 		return numMoves;
 	}
-	
+
 	public Move getBestMove() {
 		return bestMove;
 	}
-	
+
 	public boolean currentColour() {
 		return numMoves % 2 == 0;
 	}
-	
+
 	public void moveBack() {
 		if (moveHistory.size() > 0 && historyIndex > 0) {
-			
+
 			historyIndex--;
 		}
 	}
-	
+
 	public void moveForward() {
 		if (moveHistory.size() > 0 && historyIndex < moveHistory.size()) {
 			Move m = moveHistory.get(historyIndex);
-			
+
 			historyIndex++;
 		}
 	}
-	
+
 	/**
 	 *  Function to clear all the pieces off the board
 	 */
@@ -80,7 +80,7 @@ public class GameLogic {
 		}
 		historyIndex = 0;
 	}
-	
+
 	/**
 	 *  Function to set up the pieces on the board
 	 */
@@ -106,7 +106,7 @@ public class GameLogic {
 		board[0][4] = new King(0, 4, false);
 		board[7][4] = new King(7, 4, true);
 	}
-	
+
 	public void updatePieceMoves(Piece[][] board, boolean col) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
@@ -118,20 +118,20 @@ public class GameLogic {
 			}
 		}
 	}
-	
+
 	public int countPieceMoves(Piece[][] board, boolean col) {
 		int count = 0;
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
 				if (board[i][j] != null && board[i][j].getColor() == col) {
-					
+
 					count += getChildPiece(board[i][j]).getMoveList().size();
 				}
 			}
 		}
 		return count;
 	}
-	
+
 	public void checkPawnPromotes(Piece[][] board, boolean col, boolean userMove) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			int row = col ? 0 : BOARD_SIZE-1;
@@ -161,7 +161,7 @@ public class GameLogic {
 			}
 		}
 	}
-	
+
 	/**
 	 *  Function to open a pop-up dialog to let a user select which piece to promote their pawn to.
 	 * @return
@@ -175,7 +175,7 @@ public class GameLogic {
 		    "Pawn Promote", JOptionPane.PLAIN_MESSAGE, 0, null, options, options[3]);
 		return returnVal;
 	}
-	
+
 	/**
 	 *  Function to check if the game is over, by checking if there are no moves left, or checking for a draw
 	 *  by insufficient material.
@@ -192,10 +192,10 @@ public class GameLogic {
 		}
 		return false;
 	}
-	
+
 	/**
 	 *  Function to return true if the game is drawn (either only kings left, or one side has a king and knight
-	 *  or king and bishop, which is a draw by insufficient material) 
+	 *  or king and bishop, which is a draw by insufficient material)
 	 * @param board
 	 * @return
 	 */
@@ -213,7 +213,7 @@ public class GameLogic {
 		}
 		return count == 2 || (count == 3 && pieces == 1);
 	}
-	
+
 	/**
 	 *  Function to test if a given move is possible, first by checking that it designates a piece position on the board
 	 *  and the new position is either empty or to a piece of the opposite colour. If these are true, then the function
@@ -238,7 +238,7 @@ public class GameLogic {
 		}
 		return false;
 	}
-	
+
 	/**
 	 *  Function to apply the given move to the board, update the move count and check for any pawn promotions.
 	 *  The move is also added to the move history.
@@ -265,9 +265,9 @@ public class GameLogic {
 		numMoves++;
 		playerTurn = false;
 	}
-	
+
 	/**
-	 *  Function to return the given Piece object, after it has been casted to its specific child type 
+	 *  Function to return the given Piece object, after it has been casted to its specific child type
 	 * @param piece
 	 * @return
 	 */
@@ -290,7 +290,7 @@ public class GameLogic {
 		}
 		return null;
 	}
-	
+
 	/**
 	 *  Function to return true if the given move is found in the given piece's move list
 	 * @param p
@@ -305,7 +305,7 @@ public class GameLogic {
 		}
 		return false;
 	}
-	
+
 	/**
 	 *  Debug function to print board state
 	 */
@@ -322,8 +322,8 @@ public class GameLogic {
 			}
 		}
 	}
-	
-	
+
+
 	public void makeSmartBotMove() {
 		Piece[][] newBoard = deepCopyBoard(getBoard());
 		int score = alphaBeta(newBoard, 0, 2, currentColour(), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 'X');
@@ -331,12 +331,12 @@ public class GameLogic {
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 		System.out.println("move score: " + score);
 	}
-	
+
 	public void makeRandomBotMove() {
 		Move m = chooseRandomMove(getBoard(), currentColour());
 		makeGameMove(m.getStart().getX(), m.getStart().getY(), m.getEnd().getX(), m.getEnd().getY(), false);
 	}
-	
+
 	/**
 	 *  This is the evaluation function to be used by the alpha-beta pruning function. It is a linear combination
 	 *  of multiple heuristics.
@@ -347,7 +347,7 @@ public class GameLogic {
 	private int linearCombination(Piece[][] brd, boolean col) {
 		return 1 * evalBoardStatic(brd, col) + evalMobilityGeneral(brd, col);
 	}
-	
+
 	/**
 	 *  Simple static board evaluation heuristic which returns the total of all the players pieces
 	 *  values, minus the total of the opponents pieces values.
@@ -368,7 +368,7 @@ public class GameLogic {
 		}
 		return players - opponent;
 	}
-	
+
 	/**
 	 *  General mobility heuristic which seek to maximise player mobility and minimise opponent mobility,
 	 *  where mobility is the number of currently available legal moves.
@@ -389,7 +389,7 @@ public class GameLogic {
 		}
 		return players - opponent;
 	}
-	
+
 	/**
 	 *  Function to return a piece's static point value.
 	 * @param c
@@ -402,7 +402,6 @@ public class GameLogic {
 			case 'R':
 				return 50;
 			case 'B':
-				return 30;
 			case 'H':
 				return 30;
 			case 'P':
@@ -411,7 +410,7 @@ public class GameLogic {
 				return 0;
 		}
 	}
-	
+
 	private void orderMoves(ArrayList<Move> moves, Piece[][] board) {
 		// pass over the move list and assign a value rating the move based on what piece moves and what piece is taken (if any)
 		for (Move m : moves) {
@@ -421,7 +420,7 @@ public class GameLogic {
 		// sort the move list based on these ratings
 		Collections.sort(moves, (Move m1, Move m2) -> m2.getValue() - m1.getValue());
 	}
-	
+
 	/**
 	 *  Function to randomly return one of the moves from the move list
 	 * @param board
@@ -433,7 +432,7 @@ public class GameLogic {
 		Random random = new Random();
 		return moves.get(random.nextInt(moves.size()));
 	}
-	
+
 	/**
 	 *  Minimax search with alpha-beta pruning. This function explores the game tree and for each possible move, evaluates the
 	 *  board using one of the heuristic board evaluation functions, so moves can be compared to each other. The best move is
@@ -507,7 +506,7 @@ public class GameLogic {
         bestMove = bestM;
         return bestScore;
     }
-	
+
 	/**
 	 *  Quiescence search function, similar to the alpha-beta search function although this one only searches moves
 	 *  which are takes, to a given max depth. This function will be called if a terminal node in the alpha-beta search
@@ -525,7 +524,7 @@ public class GameLogic {
 		updatePieceMoves(board, col);
         ArrayList<Move> moves = returnLegalMoves(col, board);
         removeNonTakeMoves(moves);
-        //Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves 
+        //Collections.shuffle(moves, new Random()); // should implemented function to sort list of possible moves
         orderMoves(moves, board);
         if (returnLegalMoves(col, board).size() == 0) {
         	if (depth % 2 == 0) {
@@ -574,7 +573,7 @@ public class GameLogic {
         bestMove = bestM;
         return bestScore;
     }
-	
+
 	/**
 	 *  Function to remove any moves from the given move list which are not takes. This function is used in
 	 *  the quiescence search function, so only the 'unstable' moves will be explored.
@@ -587,9 +586,9 @@ public class GameLogic {
 				iter.remove();
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 *  Function to return a combined list of all the available legal moves for a given colour, by
 	 *  searching the board for pieces of the given colour, and adding their move lists to the combined list
@@ -648,7 +647,7 @@ public class GameLogic {
 		}
 		return copy;
 	}
-	
+
 	private King getKing(Piece[][] board, boolean col) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = 0; j < BOARD_SIZE; j++) {
